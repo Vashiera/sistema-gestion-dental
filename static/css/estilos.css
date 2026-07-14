@@ -1,0 +1,1081 @@
+:root {
+  --primary: #0f4c81;
+  --primary-dark: #0b3a63;
+  --primary-light: #e0f2fe;
+  --bg: #f4f7fb;
+  --white: #ffffff;
+  --text: #1f2937;
+  --muted: #64748b;
+  --border: #e5e7eb;
+  --shadow: 0 4px 14px rgba(0, 0, 0, 0.07);
+  --radius: 14px;
+}
+
+
+/* ================================
+   CONFIGURACIÓN GENERAL
+================================ */
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  font-family: Arial, sans-serif;
+}
+
+body {
+  background: var(--bg);
+  color: var(--text);
+}
+
+a {
+  text-decoration: none;
+}
+
+label {
+  display: block;
+  margin-bottom: 6px;
+  font-weight: bold;
+}
+
+input,
+select,
+textarea {
+  width: 100%;
+  padding: 12px;
+  margin-bottom: 18px;
+  border: 1px solid #cbd5e1;
+  border-radius: 8px;
+  background: var(--white);
+  color: var(--text);
+  font-size: 15px;
+}
+
+input:focus,
+select:focus,
+textarea:focus {
+  outline: none;
+  border-color: var(--primary);
+  box-shadow: 0 0 0 3px rgba(15, 76, 129, 0.12);
+}
+
+textarea {
+  resize: vertical;
+}
+
+
+form hr {
+  display: none;
+}
+
+
+/* ================================
+   LOGIN
+================================ */
+
+.login-body {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(
+    135deg,
+    var(--primary),
+    #4fb3bf
+  );
+}
+
+.login-container {
+  width: 100%;
+  max-width: 420px;
+  padding: 20px;
+}
+
+.login-card {
+  padding: 35px;
+  border-radius: 16px;
+  background: var(--white);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.18);
+}
+
+.login-card h1,
+.login-card p {
+  text-align: center;
+}
+
+.login-card h1 {
+  margin-bottom: 8px;
+  color: var(--primary);
+}
+
+.login-card p {
+  margin-bottom: 28px;
+  color: #6b7280;
+}
+
+
+/* ================================
+   LAYOUT
+================================ */
+
+.layout {
+  display: flex;
+  min-height: 100vh;
+}
+
+.sidebar {
+  width: 260px;
+  min-height: 100vh;
+  padding: 28px 20px;
+  display: flex;
+  flex-shrink: 0;
+  flex-direction: column;
+  background: var(--primary);
+  color: var(--white);
+}
+
+.logo {
+  margin-bottom: 42px;
+  text-align: center;
+}
+
+.logo h2 {
+  margin-bottom: 4px;
+  color: var(--white);
+  font-size: 26px;
+}
+
+.logo p {
+  color: #dbeafe;
+  font-size: 14px;
+}
+
+.menu,
+.sidebar nav {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.menu a,
+.sidebar a,
+.sidebar-footer a {
+  color: var(--white);
+}
+
+.menu a,
+.sidebar-footer a {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 13px 14px;
+  border-radius: 12px;
+  font-weight: 600;
+  transition: background 0.2s ease;
+}
+
+.menu a:hover,
+.sidebar-footer a:hover {
+  background: rgba(255, 255, 255, 0.16);
+}
+
+.menu a.activo {
+  background: var(--white);
+  color: var(--primary);
+  font-weight: bold;
+}
+
+.menu i,
+.sidebar-footer i {
+  font-size: 18px;
+}
+
+.sidebar-footer {
+  margin-top: auto;
+  padding-top: 25px;
+}
+
+.contenido {
+  flex: 1;
+  min-width: 0;
+  padding: 28px;
+}
+
+
+/* ================================
+   TOPBAR
+================================ */
+
+.topbar {
+  margin-bottom: 28px;
+  padding: 18px 24px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-radius: 16px;
+  background: var(--white);
+  box-shadow: 0 4px 18px rgba(15, 76, 129, 0.08);
+}
+
+.topbar h1,
+.topbar-left h1 {
+  color: var(--primary);
+}
+
+.topbar-left h1 {
+  font-size: 30px;
+}
+
+.topbar-right {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+}
+
+.notificacion {
+  width: 42px;
+  height: 42px;
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  background: var(--primary-light);
+  color: var(--primary);
+}
+
+.usuario {
+  text-align: right;
+}
+
+.usuario span {
+  display: block;
+  color: #0f172a;
+  font-weight: bold;
+}
+
+.usuario small {
+  color: var(--muted);
+}
+
+
+/* ================================
+   COMPONENTES
+================================ */
+
+.card,
+.panel,
+.plan-card {
+  padding: 22px;
+  border-radius: var(--radius);
+  background: var(--white);
+  box-shadow: var(--shadow);
+}
+
+.panel {
+  margin-bottom: 22px;
+}
+
+.panel h2,
+.detalle-tratamiento h3,
+.plan-header h4,
+.documento-falso p {
+  color: var(--primary);
+}
+
+.cards {
+  margin-bottom: 25px;
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 18px;
+}
+
+.card h3 {
+  margin-bottom: 12px;
+  color: #475569;
+  font-size: 15px;
+}
+
+.card p {
+  color: var(--primary);
+  font-size: 32px;
+  font-weight: bold;
+}
+
+.grid-doble,
+.detalle-tratamiento,
+.preview-documento {
+  display: grid;
+  gap: 22px;
+}
+
+.grid-doble {
+  grid-template-columns: 2fr 1fr;
+}
+
+.detalle-tratamiento {
+  grid-template-columns: 1fr 1fr;
+}
+
+.preview-documento {
+  grid-template-columns: 1fr 2fr;
+}
+
+.texto-centrado {
+  text-align: center;
+}
+
+.mensaje-sistema {
+  margin: 0;
+  font-weight: 700;
+}
+
+.mensaje-error {
+  color: #991b1b;
+}
+
+.mensaje-exito {
+  color: #166534;
+}
+
+
+/* ================================
+   FORMULARIOS
+================================ */
+
+.formulario {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 18px;
+}
+
+.formulario button,
+.campo-completo {
+  grid-column: span 2;
+}
+
+.buscador,
+.encabezado-seccion,
+.plan-header,
+.acciones-plan {
+  display: flex;
+  gap: 12px;
+}
+
+.buscador input {
+  margin-bottom: 0;
+}
+
+.buscador button {
+  width: 160px;
+  flex-shrink: 0;
+}
+
+.encabezado-seccion,
+.plan-header {
+  margin-bottom: 18px;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.acciones-plan {
+  margin-top: 18px;
+  flex-wrap: wrap;
+}
+
+
+/* ================================
+   BOTONES
+================================ */
+
+button {
+  width: 100%;
+  padding: 13px;
+  border: none;
+  border-radius: 8px;
+  background: var(--primary);
+  color: var(--white);
+  font-size: 16px;
+  font-weight: bold;
+  cursor: pointer;
+  transition:
+    background 0.2s ease,
+    border-color 0.2s ease,
+    color 0.2s ease,
+    transform 0.2s ease;
+}
+
+button:hover {
+  background: var(--primary-dark);
+}
+
+.btn-secundario {
+  background: var(--primary-light);
+  color: var(--primary);
+}
+
+.btn-secundario:hover {
+  background: #bae6fd;
+}
+
+.btn-tabla,
+.acciones-plan button {
+  width: auto;
+}
+
+.btn-tabla {
+  padding: 7px 12px;
+  font-size: 13px;
+}
+
+
+/* ================================
+   TABLAS
+================================ */
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+th,
+td {
+  padding: 12px;
+  border-bottom: 1px solid var(--border);
+  text-align: left;
+  vertical-align: middle;
+}
+
+th {
+  background: #f1f5f9;
+  color: #334155;
+}
+
+.link-tabla {
+  color: var(--primary);
+  font-weight: bold;
+}
+
+.link-tabla:hover {
+  text-decoration: underline;
+}
+
+
+/* ================================
+   ESTADOS
+================================ */
+
+.estado {
+  display: inline-block;
+  padding: 6px 10px;
+  border-radius: 15px;
+  font-size: 13px;
+  font-weight: bold;
+}
+
+.confirmado {
+  background: #dcfce7;
+  color: #166534;
+}
+
+.programada,
+.pendiente {
+  background: #dbeafe;
+  color: #1d4ed8;
+}
+
+.realizada {
+  background: #fef3c7;
+  color: #92400e;
+}
+
+.cancelada {
+  background: #fee2e2;
+  color: #991b1b;
+}
+
+
+/* ================================
+   PLAN DE TRATAMIENTO
+================================ */
+
+.resumen-plan {
+  margin-bottom: 22px;
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 18px;
+}
+
+.resumen-plan div {
+  padding: 16px;
+  border-left: 5px solid var(--primary);
+  border-radius: 10px;
+  background: #f8fafc;
+}
+
+.resumen-plan span {
+  display: block;
+  margin-bottom: 6px;
+  color: var(--muted);
+  font-size: 14px;
+}
+
+.resumen-plan strong {
+  color: var(--primary);
+  font-size: 24px;
+}
+
+.plan-card {
+  border: 1px solid var(--border);
+  box-shadow: none;
+}
+
+.plan-header p {
+  color: var(--muted);
+  font-size: 14px;
+}
+
+.plan-temporal {
+  margin-top: 24px;
+}
+
+
+/* ================================
+   ODONTOGRAMA SIMPLIFICADO
+================================ */
+
+.odontograma-simple {
+  margin: 24px 0;
+  padding: 22px;
+  border: 1px solid #d7e1ea;
+  border-radius: 12px;
+  background: #f8fafc;
+}
+
+.odontograma-simple .encabezado-seccion {
+  margin-bottom: 22px;
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 20px;
+}
+
+.odontograma-simple .encabezado-seccion h3 {
+  margin-bottom: 4px;
+}
+
+.odontograma-simple .encabezado-seccion p {
+  margin: 0;
+  color: var(--muted);
+}
+
+#btnTratamientoGeneral {
+  width: auto;
+  min-width: 220px;
+  padding: 12px 20px;
+  align-self: center;
+}
+
+.grupo-odontograma {
+  margin-top: 22px;
+}
+
+.grupo-odontograma h4 {
+  margin-bottom: 10px;
+  color: #163b5c;
+}
+
+.odontograma-simple .fila-dientes {
+  width: 100%;
+  display: grid;
+  grid-template-columns: repeat(16, minmax(48px, 1fr));
+  gap: 8px;
+}
+
+.odontograma-simple .pieza-dental {
+  width: auto;
+  min-width: 0;
+  height: 52px;
+  padding: 6px;
+  border: 1px solid #b8c8d6;
+  border-radius: 10px;
+  background: var(--white);
+  color: #17324d;
+  font-size: 15px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.odontograma-simple .pieza-dental:hover {
+  border-color: var(--primary);
+  background: #eaf5fc;
+  color: var(--primary);
+  transform: translateY(-2px);
+}
+
+.odontograma-simple .pieza-dental.seleccionada,
+#btnTratamientoGeneral.seleccionada {
+  border-color: var(--primary);
+  background: var(--primary);
+  color: var(--white);
+}
+
+.odontograma-simple .pieza-dental:nth-child(8) {
+  margin-right: 10px;
+}
+
+.odontograma-simple .pieza-dental:nth-child(9) {
+  margin-left: 10px;
+}
+
+#textoPiezasSeleccionadas {
+  color: var(--primary);
+  font-weight: 700;
+}
+
+
+/* ================================
+   DOCUMENTOS
+================================ */
+
+.documento-falso {
+  min-height: 260px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  border: 2px dashed #cbd5e1;
+  border-radius: var(--radius);
+  background: #f8fafc;
+  color: var(--muted);
+  text-align: center;
+}
+
+.documento-falso p {
+  margin-bottom: 8px;
+  font-size: 20px;
+  font-weight: bold;
+}
+
+
+/* ================================
+   LISTAS
+================================ */
+
+.lista-alertas {
+  padding-left: 20px;
+}
+
+.lista-alertas li,
+.detalle-tratamiento p {
+  margin-bottom: 10px;
+}
+
+
+/* ================================
+   RESPONSIVE
+================================ */
+
+@media (max-width: 1200px) {
+  .odontograma-simple .fila-dientes {
+    grid-template-columns: repeat(8, minmax(48px, 1fr));
+  }
+
+  .odontograma-simple .pieza-dental:nth-child(8),
+  .odontograma-simple .pieza-dental:nth-child(9) {
+    margin-left: 0;
+    margin-right: 0;
+  }
+}
+
+
+@media (max-width: 900px) {
+  .layout {
+    flex-direction: column;
+  }
+
+  .sidebar {
+    width: 100%;
+    min-height: auto;
+  }
+
+  .sidebar-footer {
+    margin-top: 25px;
+  }
+
+  .cards {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .grid-doble,
+  .detalle-tratamiento,
+  .preview-documento {
+    grid-template-columns: 1fr;
+  }
+
+  .contenido {
+    padding: 20px;
+  }
+}
+
+
+@media (max-width: 700px) {
+  .formulario,
+  .resumen-plan {
+    grid-template-columns: 1fr;
+  }
+
+  .formulario button,
+  .campo-completo {
+    grid-column: span 1;
+  }
+
+  .buscador,
+  .encabezado-seccion,
+  .plan-header,
+  .topbar,
+  .odontograma-simple .encabezado-seccion {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .topbar-right {
+    width: 100%;
+    justify-content: space-between;
+  }
+
+  .buscador button,
+  #btnTratamientoGeneral {
+    width: 100%;
+  }
+
+  .odontograma-simple .fila-dientes {
+    grid-template-columns: repeat(4, minmax(48px, 1fr));
+  }
+
+  table {
+    font-size: 13px;
+  }
+
+  th,
+  td {
+    padding: 9px;
+  }
+}
+
+
+@media (max-width: 520px) {
+  .cards {
+    grid-template-columns: 1fr;
+  }
+
+  .odontograma-simple {
+    padding: 15px;
+  }
+
+  .odontograma-simple .fila-dientes {
+    grid-template-columns: repeat(4, minmax(42px, 1fr));
+    gap: 6px;
+  }
+
+  .odontograma-simple .pieza-dental {
+    height: 46px;
+    font-size: 13px;
+  }
+}
+
+/* ================================
+   AGENDA DIARIA POR PROFESIONAL
+================================ */
+
+.agenda-navegacion {
+  padding: 24px;
+}
+
+.agenda-fecha-encabezado {
+  display: grid;
+  grid-template-columns: 190px 1fr 190px;
+  align-items: center;
+  gap: 18px;
+}
+
+.agenda-fecha-actual {
+  text-align: center;
+}
+
+.agenda-fecha-actual span {
+  color: var(--muted);
+  font-size: 14px;
+}
+
+.agenda-fecha-actual h2 {
+  margin-top: 5px;
+}
+
+.btn-agenda-nav {
+  padding: 12px 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  border-radius: 9px;
+  background: var(--primary-light);
+  color: var(--primary);
+  font-weight: 700;
+}
+
+.btn-agenda-nav:hover {
+  background: #bae6fd;
+}
+
+.agenda-selector-fecha {
+  margin-top: 22px;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  gap: 20px;
+}
+
+.agenda-selector-fecha .btn-secundario {
+  width: auto;
+  min-width: 110px;
+  padding: 12px 18px;
+  border-radius: 8px;
+  text-align: center;
+  font-weight: 700;
+}
+
+.agenda-selector-fecha form {
+  width: min(420px, 100%);
+}
+
+.agenda-selector-fecha input {
+  margin-bottom: 0;
+}
+
+.agenda-selector-control {
+  display: grid;
+  grid-template-columns: 1fr 120px;
+  gap: 10px;
+}
+
+.agenda-tabla-contenedor {
+  width: 100%;
+  overflow-x: auto;
+}
+
+.agenda-profesionales {
+  min-width: 900px;
+  border-collapse: separate;
+  border-spacing: 0;
+}
+
+.agenda-profesionales th,
+.agenda-profesionales td {
+  border-right: 1px solid var(--border);
+  border-bottom: 1px solid var(--border);
+}
+
+.agenda-profesionales thead th {
+  position: sticky;
+  top: 0;
+  z-index: 2;
+  padding: 16px 12px;
+  background: var(--primary);
+  color: var(--white);
+  text-align: center;
+}
+
+.agenda-columna-hora {
+  width: 85px;
+  min-width: 85px;
+}
+
+.agenda-columna-profesional {
+  min-width: 240px;
+}
+
+.agenda-columna-profesional i {
+  margin-right: 7px;
+}
+
+.agenda-hora {
+  width: 85px;
+  min-width: 85px;
+  background: #f1f5f9;
+  color: var(--primary);
+  text-align: center;
+  vertical-align: top;
+}
+
+.agenda-celda {
+  min-width: 240px;
+  height: 128px;
+  padding: 8px;
+  vertical-align: top;
+  background: #fbfdff;
+}
+
+.agenda-disponible {
+  min-height: 105px;
+  display: grid;
+  place-items: center;
+  border: 1px dashed #cbd5e1;
+  border-radius: 10px;
+  color: #94a3b8;
+  font-size: 14px;
+}
+
+.agenda-cita {
+  min-height: 105px;
+  padding: 11px;
+  border: 1px solid var(--border);
+  border-left: 5px solid var(--primary);
+  border-radius: 10px;
+  background: var(--white);
+  box-shadow: 0 2px 8px rgba(15, 76, 129, 0.08);
+}
+
+.agenda-cita-programada {
+  border-left-color: #2563eb;
+}
+
+.agenda-cita-confirmada {
+  border-left-color: #16a34a;
+}
+
+.agenda-cita-realizada {
+  border-left-color: #d97706;
+}
+
+.agenda-cita-cancelada {
+  border-left-color: #dc2626;
+  background: #fff7f7;
+  opacity: 0.8;
+}
+
+.agenda-cita-superior {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.agenda-cita-superior strong {
+  color: var(--primary);
+}
+
+.agenda-cita-superior > span {
+  color: var(--muted);
+  font-size: 12px;
+  white-space: nowrap;
+}
+
+.agenda-cita-motivo {
+  margin: 8px 0;
+  color: #475569;
+  font-size: 14px;
+}
+
+.agenda-cita-estado {
+  margin-bottom: 8px;
+}
+
+.agenda-cita-acciones {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.agenda-cita-acciones a {
+  color: var(--primary);
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.agenda-btn-cancelar {
+  width: auto;
+  margin-top: 9px;
+  padding: 6px 10px;
+  background: #fee2e2;
+  color: #991b1b;
+  font-size: 12px;
+}
+
+.agenda-btn-cancelar:hover {
+  background: #fecaca;
+}
+
+.agenda-ocupada-continuacion {
+  min-height: 105px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  border-radius: 10px;
+  background: #eaf4fb;
+  color: var(--primary);
+  font-size: 13px;
+  font-weight: 700;
+}
+
+
+/* ================================
+   RESPONSIVE AGENDA
+================================ */
+
+@media (max-width: 900px) {
+  .agenda-fecha-encabezado {
+    grid-template-columns: 1fr;
+  }
+
+  .agenda-fecha-actual {
+    order: -1;
+  }
+
+  .agenda-selector-fecha {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .agenda-selector-fecha .btn-secundario {
+    width: 100%;
+  }
+
+  .agenda-selector-fecha form {
+    width: 100%;
+  }
+}
+
+@media (max-width: 520px) {
+  .agenda-selector-control {
+    grid-template-columns: 1fr;
+  }
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+#formulario-cita {
+  scroll-margin-top: 24px;
+}
+
+.login-error {
+  margin-bottom: 20px;
+  padding: 12px 14px;
+  border: 1px solid #fecaca;
+  border-radius: 8px;
+  background: #fef2f2;
+  color: #991b1b;
+  font-size: 14px;
+  font-weight: 700;
+  text-align: center;
+}
+
+.login-ayuda {
+  margin-top: 18px;
+  margin-bottom: 0 !important;
+  color: #64748b !important;
+  font-size: 13px;
+  line-height: 1.5;
+  text-align: center;
+}

@@ -1,0 +1,342 @@
+{% extends "base.html" %}
+
+{% block titulo %}
+Presupuestos y Pagos - DentalClinic
+{% endblock %}
+
+{% block encabezado %}
+Presupuestos y Pagos
+{% endblock %}
+
+{% block contenido %}
+
+{% if error %}
+<section class="panel">
+    <p class="mensaje-sistema mensaje-error">
+        {{ error }}
+    </p>
+</section>
+{% endif %}
+
+{% if mensaje %}
+<section class="panel">
+    <p class="mensaje-sistema mensaje-exito">
+        {{ mensaje }}
+    </p>
+</section>
+{% endif %}
+
+
+<section class="cards">
+
+    <article class="card">
+        <h3>Total presupuestado</h3>
+
+        <p>
+            ${{ "{:,.0f}".format(total_presupuestado or 0).replace(",", ".") }}
+        </p>
+    </article>
+
+    <article class="card">
+        <h3>Total pagado</h3>
+
+        <p>
+            ${{ "{:,.0f}".format(total_pagado or 0).replace(",", ".") }}
+        </p>
+    </article>
+
+    <article class="card">
+        <h3>Saldo pendiente</h3>
+
+        <p>
+            ${{ "{:,.0f}".format(total_pendiente or 0).replace(",", ".") }}
+        </p>
+    </article>
+
+    <article class="card">
+        <h3>Pacientes con deuda</h3>
+
+        <p>
+            {{ cantidad_pendientes + cantidad_parciales }}
+        </p>
+    </article>
+
+</section>
+
+
+<section class="panel">
+
+    <h2>Resumen de estados de pago</h2>
+
+    <div class="resumen-plan">
+
+        <div>
+            <span>Pendientes</span>
+            <strong>{{ cantidad_pendientes }}</strong>
+        </div>
+
+        <div>
+            <span>Pagos parciales</span>
+            <strong>{{ cantidad_parciales }}</strong>
+        </div>
+
+        <div>
+            <span>Pagados</span>
+            <strong>{{ cantidad_pagados }}</strong>
+        </div>
+
+    </div>
+
+</section>
+
+
+<section class="panel">
+
+    <h2>Buscar paciente</h2>
+
+    <div class="buscador">
+
+        <input
+            type="text"
+            id="buscadorEstadoCuenta"
+            placeholder="Buscar por nombre, apellido o RUT">
+
+        <button
+            type="button"
+            id="btnBuscarEstadoCuenta">
+            Buscar
+        </button>
+
+    </div>
+
+</section>
+
+
+<section class="panel">
+
+    <div class="encabezado-seccion">
+
+        <div>
+            <h2>Estado de cuenta de pacientes</h2>
+
+            <p>
+                Los montos se calculan automáticamente a partir de los
+                tratamientos registrados y los pagos realizados.
+            </p>
+        </div>
+
+    </div>
+
+    <table id="tablaEstadosCuenta">
+
+        <thead>
+
+            <tr>
+                <th>RUT</th>
+                <th>Paciente</th>
+                <th>Total tratamientos</th>
+                <th>Total pagado</th>
+                <th>Saldo</th>
+                <th>Estado de pago</th>
+                <th>Detalle</th>
+                <th>Ficha</th>
+            </tr>
+
+        </thead>
+
+        <tbody>
+
+            {% if estados_cuenta %}
+
+                {% for cuenta in estados_cuenta %}
+
+                <tr>
+
+                    <td>
+                        {{ cuenta.rut }}
+                    </td>
+
+                    <td>
+                        {{ cuenta.nombre }}
+                        {{ cuenta.apellido }}
+                    </td>
+
+                    <td>
+                        ${{ "{:,.0f}".format(cuenta.total_tratamientos or 0).replace(",", ".") }}
+                    </td>
+
+                    <td>
+                        ${{ "{:,.0f}".format(cuenta.total_pagado or 0).replace(",", ".") }}
+                    </td>
+
+                    <td>
+                        ${{ "{:,.0f}".format(cuenta.saldo or 0).replace(",", ".") }}
+                    </td>
+
+                    <td>
+
+                        {% if cuenta.estado_pago == "PAGADO" %}
+
+                            <span class="estado realizada">
+                                Pagado
+                            </span>
+
+                        {% elif cuenta.estado_pago == "PAGO PARCIAL" %}
+
+                            <span class="estado confirmado">
+                                Pago parcial
+                            </span>
+
+                        {% elif cuenta.estado_pago == "PENDIENTE" %}
+
+                            <span class="estado pendiente">
+                                Pendiente
+                            </span>
+
+                        {% else %}
+
+                            <span class="estado programada">
+                                Sin tratamientos
+                            </span>
+
+                        {% endif %}
+
+                    </td>
+
+                    <td>
+
+                        <a
+                            class="link-tabla"
+                            href="{{ url_for('presupuesto_detalle', id=cuenta.id_paciente) }}">
+                            Ver pagos
+                        </a>
+
+                    </td>
+
+                    <td>
+
+                        <a
+                            class="link-tabla"
+                            href="{{ url_for('ficha_paciente', id=cuenta.id_paciente) }}">
+                            Ver ficha
+                        </a>
+
+                    </td>
+
+                </tr>
+
+                {% endfor %}
+
+            {% else %}
+
+                <tr>
+
+                    <td
+                        colspan="8"
+                        class="texto-centrado">
+
+                        No existen pacientes con tratamientos o pagos registrados.
+
+                    </td>
+
+                </tr>
+
+            {% endif %}
+
+        </tbody>
+
+    </table>
+
+</section>
+
+
+<section class="panel">
+
+    <h2>Información</h2>
+
+    <p>
+        Este módulo muestra el estado financiero general de los pacientes.
+        Los valores de los tratamientos se registran desde el módulo clínico,
+        mientras que aquí se consultan los montos pagados, saldos pendientes
+        y el historial de abonos.
+    </p>
+
+</section>
+
+
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+
+    const campoBusqueda = document.getElementById(
+        "buscadorEstadoCuenta"
+    );
+
+    const botonBusqueda = document.getElementById(
+        "btnBuscarEstadoCuenta"
+    );
+
+    const tabla = document.getElementById(
+        "tablaEstadosCuenta"
+    );
+
+    function filtrarEstadosCuenta() {
+
+        if (!campoBusqueda || !tabla) {
+            return;
+        }
+
+        const textoBuscado = campoBusqueda.value
+            .toLowerCase()
+            .trim();
+
+        const filas = tabla.querySelectorAll("tbody tr");
+
+        filas.forEach(function (fila) {
+
+            const contenidoFila = fila.textContent
+                .toLowerCase();
+
+            fila.style.display = contenidoFila.includes(
+                textoBuscado
+            )
+                ? ""
+                : "none";
+
+        });
+
+    }
+
+    if (campoBusqueda) {
+
+        campoBusqueda.addEventListener(
+            "input",
+            filtrarEstadosCuenta
+        );
+
+        campoBusqueda.addEventListener(
+            "keydown",
+            function (event) {
+
+                if (event.key === "Enter") {
+                    event.preventDefault();
+                    filtrarEstadosCuenta();
+                }
+
+            }
+        );
+
+    }
+
+    if (botonBusqueda) {
+
+        botonBusqueda.addEventListener(
+            "click",
+            filtrarEstadosCuenta
+        );
+
+    }
+
+});
+</script>
+
+{% endblock %}

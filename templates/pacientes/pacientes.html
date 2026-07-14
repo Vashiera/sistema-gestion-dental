@@ -1,0 +1,364 @@
+{% extends "base.html" %}
+
+{% block titulo %}
+Pacientes - DentalClinic
+{% endblock %}
+
+{% block encabezado %}
+Gestión de Pacientes
+{% endblock %}
+
+{% block contenido %}
+
+{% if mensaje %}
+<section class="panel">
+    <p class="mensaje-sistema {% if tipo_mensaje == 'error' %}mensaje-error{% else %}mensaje-exito{% endif %}">
+        {{ mensaje }}
+    </p>
+</section>
+{% endif %}
+
+
+<section class="panel">
+
+    <h2>Buscar paciente</h2>
+
+    <div class="buscador">
+
+        <input
+            type="text"
+            id="buscadorPacientes"
+            placeholder="Buscar por nombre, apellido, RUT o teléfono">
+
+        <button
+            type="button"
+            id="btnBuscarPacientes">
+            Buscar
+        </button>
+
+    </div>
+
+</section>
+
+
+<section class="panel">
+
+    <h2>
+        {% if paciente_editar %}
+            Editar paciente
+        {% else %}
+            Registrar paciente
+        {% endif %}
+    </h2>
+
+    <form
+        class="formulario"
+        action="{% if paciente_editar %}{{ url_for('actualizar_paciente_route', id=paciente_editar.id_paciente) }}{% else %}{{ url_for('crear_paciente_route') }}{% endif %}"
+        method="POST">
+
+        <div>
+            <label>RUT</label>
+
+            <input
+                type="text"
+                name="rut"
+                placeholder="12.345.678-9"
+                value="{{ paciente_editar.rut if paciente_editar else '' }}"
+                required>
+        </div>
+
+        <div>
+            <label>Nombre</label>
+
+            <input
+                type="text"
+                name="nombre"
+                placeholder="Nombre"
+                value="{{ paciente_editar.nombre if paciente_editar else '' }}"
+                required>
+        </div>
+
+        <div>
+            <label>Apellido</label>
+
+            <input
+                type="text"
+                name="apellido"
+                placeholder="Apellido"
+                value="{{ paciente_editar.apellido if paciente_editar else '' }}"
+                required>
+        </div>
+
+        <div>
+            <label>Fecha de nacimiento</label>
+
+            <input
+                type="date"
+                name="fecha_nacimiento"
+                value="{{ paciente_editar.fecha_nacimiento if paciente_editar and paciente_editar.fecha_nacimiento else '' }}">
+        </div>
+
+        <div>
+            <label>Teléfono</label>
+
+            <input
+                type="tel"
+                name="telefono"
+                placeholder="+56 9 1234 5678"
+                value="{{ paciente_editar.telefono if paciente_editar else '' }}">
+        </div>
+
+        <div>
+            <label>Correo electrónico</label>
+
+            <input
+                type="email"
+                name="correo"
+                placeholder="correo@ejemplo.cl"
+                value="{{ paciente_editar.correo if paciente_editar else '' }}">
+        </div>
+
+        <div>
+            <label>Dirección</label>
+
+            <input
+                type="text"
+                name="direccion"
+                placeholder="Dirección del paciente"
+                value="{{ paciente_editar.direccion if paciente_editar else '' }}">
+        </div>
+
+        <button type="submit">
+            {% if paciente_editar %}
+                Actualizar paciente
+            {% else %}
+                Guardar paciente
+            {% endif %}
+        </button>
+
+        {% if paciente_editar %}
+        <a
+            class="link-tabla"
+            href="{{ url_for('pacientes') }}">
+            Cancelar edición
+        </a>
+        {% endif %}
+
+    </form>
+
+</section>
+
+
+<section class="panel">
+
+    <h2>Listado de pacientes</h2>
+
+    <table id="tablaPacientes">
+
+        <thead>
+
+            <tr>
+                <th>RUT</th>
+                <th>Nombre</th>
+                <th>Apellido</th>
+                <th>Teléfono</th>
+                <th>Correo</th>
+                <th>Estado</th>
+                <th>Ficha</th>
+                <th>Editar</th>
+                <th>Activar / Desactivar</th>
+                <th>Eliminar</th>
+            </tr>
+
+        </thead>
+
+        <tbody>
+
+            {% if pacientes %}
+
+                {% for paciente in pacientes %}
+
+                <tr>
+
+                    <td>{{ paciente.rut }}</td>
+
+                    <td>{{ paciente.nombre }}</td>
+
+                    <td>{{ paciente.apellido }}</td>
+
+                    <td>
+                        {{ paciente.telefono or "Sin teléfono" }}
+                    </td>
+
+                    <td>
+                        {{ paciente.correo or "Sin correo" }}
+                    </td>
+
+                    <td>
+
+                        {% if paciente.estado == "ACTIVO" %}
+
+                            <span class="estado confirmado">
+                                Activo
+                            </span>
+
+                        {% else %}
+
+                            <span class="estado pendiente">
+                                Inactivo
+                            </span>
+
+                        {% endif %}
+
+                    </td>
+
+                    <td>
+
+                        <a
+                            class="link-tabla"
+                            href="{{ url_for('ficha_paciente', id=paciente.id_paciente) }}">
+                            Ver ficha
+                        </a>
+
+                    </td>
+
+                    <td>
+
+                        <a
+                            class="link-tabla"
+                            href="{{ url_for('editar_paciente', id=paciente.id_paciente) }}">
+                            Editar
+                        </a>
+
+                    </td>
+
+                    <td>
+
+                        <form
+                            action="{{ url_for('cambiar_estado_paciente_route', id=paciente.id_paciente) }}"
+                            method="POST">
+
+                            <button
+                                type="submit"
+                                class="btn-tabla">
+
+                                {% if paciente.estado == "ACTIVO" %}
+                                    Desactivar
+                                {% else %}
+                                    Activar
+                                {% endif %}
+
+                            </button>
+
+                        </form>
+
+                    </td>
+
+                    <td>
+
+                        <form
+                            action="{{ url_for('eliminar_paciente_route', id=paciente.id_paciente) }}"
+                            method="POST"
+                            onsubmit="return confirm('¿Deseas eliminar definitivamente este paciente? Solo será posible si no tiene información asociada.');">
+
+                            <button
+                                type="submit"
+                                class="btn-tabla">
+                                Eliminar
+                            </button>
+
+                        </form>
+
+                    </td>
+
+                </tr>
+
+                {% endfor %}
+
+            {% else %}
+
+                <tr>
+
+                    <td
+                        colspan="10"
+                        class="texto-centrado">
+
+                        No existen pacientes registrados.
+
+                    </td>
+
+                </tr>
+
+            {% endif %}
+
+        </tbody>
+
+    </table>
+
+</section>
+
+
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+
+    const campoBusqueda = document.getElementById("buscadorPacientes");
+    const botonBusqueda = document.getElementById("btnBuscarPacientes");
+    const tabla = document.getElementById("tablaPacientes");
+
+    function filtrarPacientes() {
+
+        if (!campoBusqueda || !tabla) {
+            return;
+        }
+
+        const textoBuscado = campoBusqueda.value
+            .toLowerCase()
+            .trim();
+
+        const filas = tabla.querySelectorAll("tbody tr");
+
+        filas.forEach(function (fila) {
+
+            const contenidoFila = fila.textContent
+                .toLowerCase();
+
+            fila.style.display = contenidoFila.includes(textoBuscado)
+                ? ""
+                : "none";
+
+        });
+
+    }
+
+    if (campoBusqueda) {
+
+        campoBusqueda.addEventListener(
+            "input",
+            filtrarPacientes
+        );
+
+        campoBusqueda.addEventListener(
+            "keydown",
+            function (event) {
+
+                if (event.key === "Enter") {
+                    event.preventDefault();
+                    filtrarPacientes();
+                }
+
+            }
+        );
+
+    }
+
+    if (botonBusqueda) {
+        botonBusqueda.addEventListener(
+            "click",
+            filtrarPacientes
+        );
+    }
+
+});
+</script>
+
+{% endblock %}

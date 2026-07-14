@@ -1,0 +1,151 @@
+{% extends "base.html" %}
+
+{% block titulo %}
+Documentos - DentalClinic
+{% endblock %}
+
+{% block encabezado %}
+Documentos Digitales
+{% endblock %}
+
+{% block contenido %}
+
+<section class="cards">
+    <article class="card">
+        <h3>Documentos registrados</h3>
+        <p>{{ documentos|length }}</p>
+    </article>
+
+    <article class="card">
+        <h3>Consentimientos</h3>
+        <p>-</p>
+    </article>
+
+    <article class="card">
+        <h3>Presupuestos</h3>
+        <p>-</p>
+    </article>
+
+    <article class="card">
+        <h3>Radiografías</h3>
+        <p>-</p>
+    </article>
+</section>
+
+<section class="panel">
+    <h2>Registrar documento</h2>
+
+    <form
+        class="formulario"
+        action="{{ url_for('crear_documento_route') }}"
+        method="POST"
+        enctype="multipart/form-data">
+
+        <div>
+            <label>Paciente</label>
+            <select name="id_paciente" required>
+                <option value="">Seleccione un paciente</option>
+
+                {% for paciente in pacientes %}
+                <option value="{{ paciente.id_paciente }}">
+                    {{ paciente.nombre }} {{ paciente.apellido }} - {{ paciente.rut }}
+                </option>
+                {% endfor %}
+            </select>
+        </div>
+
+        <div>
+            <label>Tipo de documento</label>
+            <select name="id_tipo_documento" required>
+                <option value="">Seleccione un tipo</option>
+
+                {% for tipo in tipos_documento %}
+                <option value="{{ tipo.id_tipo_documento }}">
+                    {{ tipo.nombre_tipo }}
+                </option>
+                {% endfor %}
+            </select>
+        </div>
+
+        <div>
+            <label>Nombre del documento</label>
+            <input
+                type="text"
+                name="nombre_documento"
+                placeholder="Ej: Consentimiento informado 2026"
+                required>
+        </div>
+
+        <div>
+            <label>Archivo</label>
+            <input
+                type="file"
+                name="archivo"
+                required>
+        </div>
+
+        <button type="submit">
+            Guardar documento
+        </button>
+
+    </form>
+</section>
+
+<section class="panel">
+    <h2>Listado de documentos</h2>
+
+    <table>
+        <thead>
+            <tr>
+                <th>Paciente</th>
+                <th>Tipo</th>
+                <th>Documento</th>
+                <th>Fecha subida</th>
+                <th>Archivo</th>
+                <th>Ficha</th>
+            </tr>
+        </thead>
+
+        <tbody>
+            {% if documentos %}
+                {% for documento in documentos %}
+                <tr>
+                    <td>{{ documento.nombre }} {{ documento.apellido }}</td>
+                    <td>{{ documento.nombre_tipo }}</td>
+                    <td>{{ documento.nombre_documento }}</td>
+                    <td>{{ documento.fecha_subida }}</td>
+
+                    <td>
+                        {% if documento.ruta_archivo %}
+                            <a
+                                class="link-tabla"
+                                href="{{ url_for('static', filename=documento.ruta_archivo) }}"
+                                target="_blank">
+                                Ver archivo
+                            </a>
+                        {% else %}
+                            Sin archivo
+                        {% endif %}
+                    </td>
+
+                    <td>
+                        <a
+                            class="link-tabla"
+                            href="{{ url_for('ficha_paciente', id=documento.id_paciente) }}">
+                            Ver ficha
+                        </a>
+                    </td>
+                </tr>
+                {% endfor %}
+            {% else %}
+                <tr>
+                    <td colspan="6" style="text-align:center;">
+                        No existen documentos registrados.
+                    </td>
+                </tr>
+            {% endif %}
+        </tbody>
+    </table>
+</section>
+
+{% endblock %}

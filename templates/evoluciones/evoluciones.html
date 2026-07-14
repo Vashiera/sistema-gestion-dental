@@ -1,0 +1,714 @@
+{% extends "base.html" %}
+
+{% block titulo %}
+Evoluciones Clínicas - DentalClinic
+{% endblock %}
+
+{% block encabezado %}
+Evoluciones Clínicas
+{% endblock %}
+
+{% block contenido %}
+
+
+{% if error %}
+<section class="panel">
+    <p class="mensaje-sistema mensaje-error">
+        {{ error }}
+    </p>
+</section>
+{% endif %}
+
+
+{% if mensaje %}
+<section class="panel">
+    <p class="mensaje-sistema mensaje-exito">
+        {{ mensaje }}
+    </p>
+</section>
+{% endif %}
+
+
+<section class="panel">
+
+    <div class="encabezado-seccion">
+
+        <div>
+            <h2>Seleccionar paciente</h2>
+
+            <p>
+                Busque un paciente para consultar o registrar
+                sus evoluciones clínicas.
+            </p>
+        </div>
+
+    </div>
+
+    <form
+        method="GET"
+        action="{{ url_for('evoluciones') }}">
+
+        <div class="formulario">
+
+            <div>
+
+                <label for="buscarPacienteEvolucion">
+                    Buscar paciente
+                </label>
+
+                <input
+                    type="text"
+                    id="buscarPacienteEvolucion"
+                    placeholder="Escriba nombre, apellido o RUT"
+                    autocomplete="off">
+
+            </div>
+
+
+            <div>
+
+                <label for="pacienteEvolucion">
+                    Paciente
+                </label>
+
+                <select
+                    id="pacienteEvolucion"
+                    name="id_paciente"
+                    required>
+
+                    <option value="">
+                        Seleccione un paciente
+                    </option>
+
+                    {% for paciente in pacientes %}
+
+                    <option
+                        value="{{ paciente.id_paciente }}"
+                        data-busqueda="{{ paciente.nombre }} {{ paciente.apellido }} {{ paciente.rut }}"
+                        {% if paciente_seleccionado and paciente_seleccionado.id_paciente|string == paciente.id_paciente|string %}
+                            selected
+                        {% endif %}>
+
+                        {{ paciente.nombre }}
+                        {{ paciente.apellido }}
+                        - {{ paciente.rut }}
+
+                    </option>
+
+                    {% endfor %}
+
+                </select>
+
+            </div>
+
+
+            <button type="submit">
+                Ver historial clínico
+            </button>
+
+        </div>
+
+    </form>
+
+</section>
+
+
+{% if paciente_seleccionado %}
+
+<section class="cards">
+
+    <article class="card">
+        <h3>Evoluciones registradas</h3>
+        <p>{{ evoluciones|length }}</p>
+    </article>
+
+    <article class="card">
+        <h3>Tratamientos</h3>
+        <p>{{ tratamientos|length }}</p>
+    </article>
+
+    <article class="card">
+        <h3>Tratamientos con evolución</h3>
+
+        <p>
+            {{
+                evoluciones
+                | map(attribute="id_tratamiento")
+                | unique
+                | list
+                | length
+            }}
+        </p>
+    </article>
+
+    <article class="card">
+        <h3>Profesionales disponibles</h3>
+        <p>{{ odontologos|length }}</p>
+    </article>
+
+</section>
+
+{% endif %}
+
+
+{% if evolucion_editar %}
+
+<section class="panel">
+
+    <div class="encabezado-seccion">
+
+        <div>
+
+            <h2>Editar evolución clínica</h2>
+
+            <p>
+                Paciente:
+                <strong>
+                    {{ paciente_seleccionado.nombre }}
+                    {{ paciente_seleccionado.apellido }}
+                </strong>
+                — {{ paciente_seleccionado.rut }}
+            </p>
+
+        </div>
+
+    </div>
+
+
+    <form
+        class="formulario"
+        method="POST"
+        action="{{ url_for('actualizar_evolucion_route', id=evolucion_editar.id_evolucion) }}">
+
+        <input
+            type="hidden"
+            name="id_paciente"
+            value="{{ paciente_seleccionado.id_paciente }}">
+
+
+        <div>
+
+            <label for="tratamientoEvolucion">
+                Tratamiento
+            </label>
+
+            <select
+                id="tratamientoEvolucion"
+                name="id_tratamiento"
+                required>
+
+                <option value="">
+                    Seleccione un tratamiento
+                </option>
+
+                {% for tratamiento in tratamientos %}
+
+                <option
+                    value="{{ tratamiento.id_tratamiento }}"
+                    {% if evolucion_editar.id_tratamiento|string == tratamiento.id_tratamiento|string %}
+                        selected
+                    {% endif %}>
+
+                    {{ tratamiento.nombre_tratamiento }}
+
+                    {% if tratamiento.pieza_dental %}
+                        - Pieza
+                        {{ tratamiento.pieza_dental[0] }}.{{ tratamiento.pieza_dental[1] }}
+                    {% else %}
+                        - General
+                    {% endif %}
+
+                </option>
+
+                {% endfor %}
+
+            </select>
+
+        </div>
+
+
+        <div>
+
+            <label for="profesionalEvolucion">
+                Profesional
+            </label>
+
+            <select
+                id="profesionalEvolucion"
+                name="id_usuario"
+                required>
+
+                <option value="">
+                    Seleccione un profesional
+                </option>
+
+                {% for usuario in odontologos %}
+
+                <option
+                    value="{{ usuario.id_usuario }}"
+                    {% if evolucion_editar.id_usuario|string == usuario.id_usuario|string %}
+                        selected
+                    {% endif %}>
+
+                    {{ usuario.nombre }}
+
+                </option>
+
+                {% endfor %}
+
+            </select>
+
+        </div>
+
+
+        <div>
+
+            <label for="fechaEvolucion">
+                Fecha
+            </label>
+
+            <input
+                type="date"
+                id="fechaEvolucion"
+                name="fecha"
+                value="{{ evolucion_editar.fecha }}"
+                required>
+
+        </div>
+
+
+        <div class="campo-completo">
+
+            <label for="procedimientoRealizado">
+                Procedimiento realizado
+            </label>
+
+            <textarea
+                id="procedimientoRealizado"
+                name="procedimiento_realizado"
+                rows="3"
+                placeholder="Describa lo realizado durante la atención"
+                required>{{ evolucion_editar.procedimiento_realizado }}</textarea>
+
+        </div>
+
+
+        <div class="campo-completo">
+
+            <label for="observacionesEvolucion">
+                Observaciones
+            </label>
+
+            <textarea
+                id="observacionesEvolucion"
+                name="observaciones"
+                rows="4"
+                placeholder="Indicaciones, respuesta del paciente u otras observaciones">{{ evolucion_editar.observaciones or "" }}</textarea>
+
+        </div>
+
+
+        <button type="submit">
+            Actualizar evolución
+        </button>
+
+        <a
+            class="link-tabla"
+            href="{{ url_for('evoluciones', id_paciente=paciente_seleccionado.id_paciente) }}">
+            Cancelar edición
+        </a>
+
+    </form>
+
+</section>
+
+
+{% elif paciente_seleccionado %}
+
+<section class="panel">
+
+    <div class="encabezado-seccion">
+
+        <div>
+
+            <h2>Nueva evolución clínica</h2>
+
+            <p>
+                Paciente:
+                <strong>
+                    {{ paciente_seleccionado.nombre }}
+                    {{ paciente_seleccionado.apellido }}
+                </strong>
+                — {{ paciente_seleccionado.rut }}
+            </p>
+
+        </div>
+
+    </div>
+
+
+    {% if tratamientos %}
+
+    <form
+        class="formulario"
+        method="POST"
+        action="{{ url_for('crear_evolucion_route') }}">
+
+        <input
+            type="hidden"
+            name="id_paciente"
+            value="{{ paciente_seleccionado.id_paciente }}">
+
+
+        <div>
+
+            <label for="tratamientoEvolucion">
+                Tratamiento
+            </label>
+
+            <select
+                id="tratamientoEvolucion"
+                name="id_tratamiento"
+                required>
+
+                <option value="">
+                    Seleccione un tratamiento
+                </option>
+
+                {% for tratamiento in tratamientos %}
+
+                <option value="{{ tratamiento.id_tratamiento }}">
+
+                    {{ tratamiento.nombre_tratamiento }}
+
+                    {% if tratamiento.pieza_dental %}
+                        - Pieza
+                        {{ tratamiento.pieza_dental[0] }}.{{ tratamiento.pieza_dental[1] }}
+                    {% else %}
+                        - General
+                    {% endif %}
+
+                    - {{ tratamiento.estado }}
+
+                </option>
+
+                {% endfor %}
+
+            </select>
+
+        </div>
+
+
+        <div>
+
+            <label for="profesionalEvolucion">
+                Profesional
+            </label>
+
+            <select
+                id="profesionalEvolucion"
+                name="id_usuario"
+                required>
+
+                <option value="">
+                    Seleccione un profesional
+                </option>
+
+                {% for usuario in odontologos %}
+
+                <option value="{{ usuario.id_usuario }}">
+                    {{ usuario.nombre }}
+                </option>
+
+                {% endfor %}
+
+            </select>
+
+        </div>
+
+
+        <div>
+
+            <label for="fechaEvolucion">
+                Fecha
+            </label>
+
+            <input
+                type="date"
+                id="fechaEvolucion"
+                name="fecha"
+                required>
+
+        </div>
+
+
+        <div class="campo-completo">
+
+            <label for="procedimientoRealizado">
+                Procedimiento realizado
+            </label>
+
+            <textarea
+                id="procedimientoRealizado"
+                name="procedimiento_realizado"
+                rows="3"
+                placeholder="Describa lo realizado durante la atención"
+                required></textarea>
+
+        </div>
+
+
+        <div class="campo-completo">
+
+            <label for="observacionesEvolucion">
+                Observaciones
+            </label>
+
+            <textarea
+                id="observacionesEvolucion"
+                name="observaciones"
+                rows="4"
+                placeholder="Indicaciones, respuesta del paciente u otras observaciones"></textarea>
+
+        </div>
+
+
+        <button type="submit">
+            Registrar evolución
+        </button>
+
+    </form>
+
+
+    {% else %}
+
+    <p class="texto-centrado">
+        El paciente no tiene tratamientos registrados.
+        Primero debe crear un plan de tratamiento.
+    </p>
+
+    <div class="texto-centrado">
+
+        <a
+            class="link-tabla"
+            href="{{ url_for('tratamientos', id_paciente=paciente_seleccionado.id_paciente) }}">
+            Ir a tratamientos
+        </a>
+
+    </div>
+
+    {% endif %}
+
+</section>
+
+
+{% else %}
+
+<section class="panel">
+
+    <p class="texto-centrado">
+        Seleccione un paciente para consultar o registrar
+        sus evoluciones clínicas.
+    </p>
+
+</section>
+
+{% endif %}
+
+
+{% if paciente_seleccionado %}
+
+<section class="panel">
+
+    <div class="encabezado-seccion">
+
+        <div>
+
+            <h2>Historial clínico</h2>
+
+            <p>
+                {{ paciente_seleccionado.nombre }}
+                {{ paciente_seleccionado.apellido }}
+                — {{ paciente_seleccionado.rut }}
+            </p>
+
+        </div>
+
+
+        <a
+            class="link-tabla"
+            href="{{ url_for('ficha_paciente', id=paciente_seleccionado.id_paciente) }}">
+            Ver ficha del paciente
+        </a>
+
+    </div>
+
+
+    <table>
+
+        <thead>
+
+            <tr>
+                <th>Fecha</th>
+                <th>Tratamiento</th>
+                <th>Pieza</th>
+                <th>Profesional</th>
+                <th>Procedimiento realizado</th>
+                <th>Observaciones</th>
+                <th>Editar</th>
+            </tr>
+
+        </thead>
+
+        <tbody>
+
+            {% if evoluciones %}
+
+                {% for evolucion in evoluciones %}
+
+                <tr>
+
+                    <td>
+                        {{ evolucion.fecha }}
+                    </td>
+
+                    <td>
+                        {{ evolucion.nombre_tratamiento }}
+                    </td>
+
+                    <td>
+
+                        {% if evolucion.pieza_dental %}
+
+                            {{ evolucion.pieza_dental[0] }}.{{ evolucion.pieza_dental[1] }}
+
+                        {% else %}
+
+                            General
+
+                        {% endif %}
+
+                    </td>
+
+                    <td>
+                        {{ evolucion.nombre_profesional }}
+                    </td>
+
+                    <td>
+                        {{ evolucion.procedimiento_realizado }}
+                    </td>
+
+                    <td>
+                        {{ evolucion.observaciones or "Sin observaciones" }}
+                    </td>
+
+                    <td>
+
+                        <a
+                            class="link-tabla"
+                            href="{{ url_for('editar_evolucion', id=evolucion.id_evolucion) }}">
+                            Editar
+                        </a>
+
+                    </td>
+
+                </tr>
+
+                {% endfor %}
+
+            {% else %}
+
+                <tr>
+
+                    <td
+                        colspan="7"
+                        class="texto-centrado">
+
+                        El paciente no tiene evoluciones clínicas registradas.
+
+                    </td>
+
+                </tr>
+
+            {% endif %}
+
+        </tbody>
+
+    </table>
+
+</section>
+
+{% endif %}
+
+
+<section class="panel">
+
+    <h2>Información</h2>
+
+    <p>
+        Las evoluciones clínicas se registran sobre un tratamiento
+        específico del paciente. Cada registro mantiene la fecha,
+        el profesional, el procedimiento realizado y las observaciones
+        clínicas correspondientes.
+    </p>
+
+</section>
+
+
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+
+    const buscadorPaciente =
+        document.getElementById("buscarPacienteEvolucion");
+
+    const selectorPaciente =
+        document.getElementById("pacienteEvolucion");
+
+    if (!buscadorPaciente || !selectorPaciente) {
+        return;
+    }
+
+    buscadorPaciente.addEventListener(
+        "input",
+        function () {
+
+            const busqueda =
+                buscadorPaciente.value
+                    .toLowerCase()
+                    .trim();
+
+            const opciones =
+                selectorPaciente.querySelectorAll(
+                    "option[data-busqueda]"
+                );
+
+            opciones.forEach(function (opcion) {
+
+                const contenido =
+                    opcion.dataset.busqueda
+                        .toLowerCase();
+
+                opcion.hidden =
+                    !contenido.includes(busqueda);
+
+            });
+
+            const seleccionada =
+                selectorPaciente.options[
+                    selectorPaciente.selectedIndex
+                ];
+
+            if (
+                seleccionada &&
+                seleccionada.hidden
+            ) {
+                selectorPaciente.value = "";
+            }
+
+        }
+    );
+
+});
+</script>
+
+{% endblock %}

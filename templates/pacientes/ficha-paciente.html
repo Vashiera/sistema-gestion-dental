@@ -1,0 +1,903 @@
+{% extends "base.html" %}
+
+{% block titulo %}
+Ficha del Paciente - DentalClinic
+{% endblock %}
+
+{% block encabezado %}
+Ficha del Paciente
+{% endblock %}
+
+{% block contenido %}
+
+
+<div class="encabezado-seccion">
+
+    <div>
+
+        <h2>
+            {{ paciente.nombre }}
+            {{ paciente.apellido }}
+        </h2>
+
+        <p>
+            RUT: {{ paciente.rut }}
+        </p>
+
+    </div>
+
+
+    <a
+        class="btn-secundario"
+        href="{{ url_for('pacientes') }}">
+        Volver a pacientes
+    </a>
+
+</div>
+
+
+<section class="panel">
+
+    <div class="encabezado-seccion">
+
+        <h2>Datos personales</h2>
+
+        <a
+            class="link-tabla"
+            href="{{ url_for('editar_paciente', id=paciente.id_paciente) }}">
+            Editar datos
+        </a>
+
+    </div>
+
+
+    <div class="grid-doble">
+
+        <p>
+            <strong>RUT</strong><br>
+            {{ paciente.rut }}
+        </p>
+
+
+        <p>
+
+            <strong>Estado</strong><br>
+
+            {% if paciente.estado == "ACTIVO" %}
+
+                <span class="estado confirmado">
+                    Activo
+                </span>
+
+            {% else %}
+
+                <span class="estado pendiente">
+                    Inactivo
+                </span>
+
+            {% endif %}
+
+        </p>
+
+
+        <p>
+            <strong>Teléfono</strong><br>
+            {{ paciente.telefono or "Sin teléfono registrado" }}
+        </p>
+
+
+        <p>
+            <strong>Correo electrónico</strong><br>
+            {{ paciente.correo or "Sin correo registrado" }}
+        </p>
+
+
+        <p>
+            <strong>Dirección</strong><br>
+            {{ paciente.direccion or "Sin dirección registrada" }}
+        </p>
+
+
+        <p>
+            <strong>Fecha de nacimiento</strong><br>
+            {{ paciente.fecha_nacimiento or "Sin fecha registrada" }}
+        </p>
+
+    </div>
+
+</section>
+
+
+<section class="cards">
+
+    <article class="card">
+        <h3>Tratamientos</h3>
+        <p>{{ tratamientos|length }}</p>
+    </article>
+
+    <article class="card">
+        <h3>Planificados</h3>
+        <p>{{ cantidad_planificados }}</p>
+    </article>
+
+    <article class="card">
+        <h3>En proceso</h3>
+        <p>{{ cantidad_en_proceso }}</p>
+    </article>
+
+    <article class="card">
+        <h3>Finalizados</h3>
+        <p>{{ cantidad_finalizados }}</p>
+    </article>
+
+</section>
+
+
+<section class="panel">
+
+    <div class="encabezado-seccion">
+
+        <div>
+
+            <h2>Plan de tratamiento</h2>
+
+            <p>
+                Procedimientos agrupados por tipo de tratamiento
+                y piezas dentales.
+            </p>
+
+        </div>
+
+
+        <a
+            class="btn-secundario"
+            href="{{ url_for('tratamientos', id_paciente=paciente.id_paciente) }}">
+            Registrar tratamiento
+        </a>
+
+    </div>
+
+
+    <div class="resumen-plan">
+
+        <div>
+
+            <span>Valor total</span>
+
+            <strong>
+                ${{ "{:,.0f}".format(total_tratamientos or 0).replace(",", ".") }}
+            </strong>
+
+        </div>
+
+
+        <div>
+
+            <span>Tratamientos registrados</span>
+
+            <strong>
+                {{ tratamientos|length }}
+            </strong>
+
+        </div>
+
+
+        <div>
+
+            <span>Pendientes o en proceso</span>
+
+            <strong>
+                {{ cantidad_planificados + cantidad_en_proceso }}
+            </strong>
+
+        </div>
+
+    </div>
+
+
+    {% if plan_agrupado and plan_agrupado.grupos %}
+
+        {% for grupo in plan_agrupado.grupos %}
+
+        <div
+            class="plan-card"
+            style="margin-bottom: 20px;">
+
+            <div class="plan-header">
+
+                <div>
+
+                    <h3>
+                        {{ grupo.nombre_tratamiento }}
+                    </h3>
+
+                    <p>
+                        Piezas:
+                        {{ grupo.piezas|join(", ") }}
+                    </p>
+
+                    <p>
+                        {{ grupo.cantidad }}
+                        procedimiento{% if grupo.cantidad != 1 %}s{% endif %}
+                    </p>
+
+                </div>
+
+
+                <strong>
+                    ${{ "{:,.0f}".format(grupo.total or 0).replace(",", ".") }}
+                </strong>
+
+            </div>
+
+
+            <table>
+
+                <thead>
+
+                    <tr>
+                        <th>Pieza</th>
+                        <th>Observaciones</th>
+                        <th>Valor</th>
+                        <th>Estado</th>
+                        <th>Editar</th>
+                    </tr>
+
+                </thead>
+
+                <tbody>
+
+                    {% for tratamiento in grupo.registros %}
+
+                    <tr>
+
+                        <td>
+
+                            {% if tratamiento.pieza_dental %}
+
+                                {{ tratamiento.pieza_dental[0] }}.{{ tratamiento.pieza_dental[1] }}
+
+                            {% else %}
+
+                                General
+
+                            {% endif %}
+
+                        </td>
+
+
+                        <td>
+                            {{ tratamiento.descripcion or "Sin observaciones" }}
+                        </td>
+
+
+                        <td>
+                            ${{ "{:,.0f}".format(tratamiento.valor_presupuestado or 0).replace(",", ".") }}
+                        </td>
+
+
+                        <td>
+
+                            {% if tratamiento.estado == "FINALIZADO" %}
+
+                                <span class="estado realizada">
+                                    Finalizado
+                                </span>
+
+                            {% elif tratamiento.estado == "EN PROCESO" %}
+
+                                <span class="estado confirmado">
+                                    En proceso
+                                </span>
+
+                            {% else %}
+
+                                <span class="estado programada">
+                                    Planificado
+                                </span>
+
+                            {% endif %}
+
+                        </td>
+
+
+                        <td>
+
+                            <a
+                                class="link-tabla"
+                                href="{{ url_for('editar_tratamiento', id=tratamiento.id_tratamiento) }}">
+                                Editar
+                            </a>
+
+                        </td>
+
+                    </tr>
+
+                    {% endfor %}
+
+                </tbody>
+
+            </table>
+
+        </div>
+
+        {% endfor %}
+
+
+    {% else %}
+
+        <p class="texto-centrado">
+            Este paciente no tiene tratamientos registrados.
+        </p>
+
+    {% endif %}
+
+</section>
+
+
+<section class="panel">
+
+    <div class="encabezado-seccion">
+
+        <div>
+
+            <h2>Historial clínico</h2>
+
+            <p>
+                Evoluciones asociadas a los tratamientos del paciente.
+            </p>
+
+        </div>
+
+
+        <a
+            class="btn-secundario"
+            href="{{ url_for('evoluciones', id_paciente=paciente.id_paciente) }}">
+            Registrar evolución
+        </a>
+
+    </div>
+
+
+    <table>
+
+        <thead>
+
+            <tr>
+                <th>Fecha</th>
+                <th>Tratamiento</th>
+                <th>Pieza</th>
+                <th>Profesional</th>
+                <th>Procedimiento realizado</th>
+                <th>Observaciones</th>
+                <th>Editar</th>
+            </tr>
+
+        </thead>
+
+        <tbody>
+
+            {% if evoluciones %}
+
+                {% for evolucion in evoluciones %}
+
+                <tr>
+
+                    <td>
+                        {{ evolucion.fecha }}
+                    </td>
+
+
+                    <td>
+                        {{ evolucion.nombre_tratamiento }}
+                    </td>
+
+
+                    <td>
+
+                        {% if evolucion.pieza_dental %}
+
+                            {{ evolucion.pieza_dental[0] }}.{{ evolucion.pieza_dental[1] }}
+
+                        {% else %}
+
+                            General
+
+                        {% endif %}
+
+                    </td>
+
+
+                    <td>
+                        {{ evolucion.nombre_profesional }}
+                    </td>
+
+
+                    <td>
+                        {{ evolucion.procedimiento_realizado }}
+                    </td>
+
+
+                    <td>
+                        {{ evolucion.observaciones or "Sin observaciones" }}
+                    </td>
+
+
+                    <td>
+
+                        <a
+                            class="link-tabla"
+                            href="{{ url_for('editar_evolucion', id=evolucion.id_evolucion) }}">
+                            Editar
+                        </a>
+
+                    </td>
+
+                </tr>
+
+                {% endfor %}
+
+
+            {% else %}
+
+                <tr>
+
+                    <td
+                        colspan="7"
+                        class="texto-centrado">
+
+                        Este paciente no tiene evoluciones clínicas registradas.
+
+                    </td>
+
+                </tr>
+
+            {% endif %}
+
+        </tbody>
+
+    </table>
+
+</section>
+
+
+<section class="panel">
+
+    <div class="encabezado-seccion">
+
+        <h2>Estado de cuenta</h2>
+
+        {% if cuenta %}
+
+        <a
+            class="btn-secundario"
+            href="{{ url_for('presupuesto_detalle', id=cuenta.id_paciente) }}">
+            Ver detalle de pagos
+        </a>
+
+        {% endif %}
+
+    </div>
+
+
+    {% if cuenta %}
+
+    <div class="resumen-plan">
+
+        <div>
+
+            <span>Total tratamientos</span>
+
+            <strong>
+                ${{ "{:,.0f}".format(cuenta.total_tratamientos or 0).replace(",", ".") }}
+            </strong>
+
+        </div>
+
+
+        <div>
+
+            <span>Total pagado</span>
+
+            <strong>
+                ${{ "{:,.0f}".format(cuenta.total_pagado or 0).replace(",", ".") }}
+            </strong>
+
+        </div>
+
+
+        <div>
+
+            <span>Saldo pendiente</span>
+
+            <strong>
+                ${{ "{:,.0f}".format(cuenta.saldo or 0).replace(",", ".") }}
+            </strong>
+
+        </div>
+
+    </div>
+
+
+    <p>
+
+        <strong>Estado de pago:</strong>
+
+        {% if cuenta.estado_pago == "PAGADO" %}
+
+            <span class="estado realizada">
+                Pagado
+            </span>
+
+        {% elif cuenta.estado_pago == "PAGO PARCIAL" %}
+
+            <span class="estado confirmado">
+                Pago parcial
+            </span>
+
+        {% elif cuenta.estado_pago == "PENDIENTE" %}
+
+            <span class="estado pendiente">
+                Pendiente
+            </span>
+
+        {% else %}
+
+            <span class="estado programada">
+                Sin tratamientos
+            </span>
+
+        {% endif %}
+
+    </p>
+
+
+    {% else %}
+
+    <p>
+        No fue posible obtener el estado de cuenta del paciente.
+    </p>
+
+    {% endif %}
+
+</section>
+
+
+<section class="panel">
+
+    <div class="encabezado-seccion">
+
+        <h2>Historial de pagos</h2>
+
+        {% if cuenta %}
+
+        <a
+            class="link-tabla"
+            href="{{ url_for('presupuesto_detalle', id=cuenta.id_paciente) }}">
+            Registrar pago
+        </a>
+
+        {% endif %}
+
+    </div>
+
+
+    <table>
+
+        <thead>
+
+            <tr>
+                <th>Fecha</th>
+                <th>Monto</th>
+                <th>Método</th>
+                <th>Estado</th>
+                <th>Observaciones</th>
+            </tr>
+
+        </thead>
+
+        <tbody>
+
+            {% if pagos %}
+
+                {% for pago in pagos %}
+
+                <tr>
+
+                    <td>
+                        {{ pago.fecha_pago }}
+                    </td>
+
+
+                    <td>
+                        ${{ "{:,.0f}".format(pago.monto or 0).replace(",", ".") }}
+                    </td>
+
+
+                    <td>
+                        {{ pago.metodo_pago }}
+                    </td>
+
+
+                    <td>
+
+                        {% if pago.estado == "REGISTRADO" %}
+
+                            <span class="estado confirmado">
+                                Registrado
+                            </span>
+
+                        {% else %}
+
+                            <span class="estado cancelada">
+                                Anulado
+                            </span>
+
+                        {% endif %}
+
+                    </td>
+
+
+                    <td>
+                        {{ pago.observaciones or "Sin observaciones" }}
+                    </td>
+
+                </tr>
+
+                {% endfor %}
+
+
+            {% else %}
+
+                <tr>
+
+                    <td
+                        colspan="5"
+                        class="texto-centrado">
+
+                        Este paciente no tiene pagos registrados.
+
+                    </td>
+
+                </tr>
+
+            {% endif %}
+
+        </tbody>
+
+    </table>
+
+</section>
+
+
+<section class="panel">
+
+    <div class="encabezado-seccion">
+
+        <h2>Citas</h2>
+
+        <a
+            class="btn-secundario"
+            href="{{ url_for('agenda') }}">
+            Ir a agenda
+        </a>
+
+    </div>
+
+
+    <table>
+
+        <thead>
+
+            <tr>
+                <th>Fecha</th>
+                <th>Hora</th>
+                <th>Duración</th>
+                <th>Profesional</th>
+                <th>Motivo</th>
+                <th>Estado</th>
+                <th>Editar</th>
+            </tr>
+
+        </thead>
+
+        <tbody>
+
+            {% if citas %}
+
+                {% for cita in citas %}
+
+                <tr>
+
+                    <td>
+                        {{ cita.fecha }}
+                    </td>
+
+
+                    <td>
+                        {{ cita.hora }}
+                    </td>
+
+
+                    <td>
+                        {{ cita.duracion_minutos }} min
+                    </td>
+
+
+                    <td>
+                        {{ cita.nombre_profesional }}
+                    </td>
+
+
+                    <td>
+                        {{ cita.motivo }}
+                    </td>
+
+
+                    <td>
+
+                        {% if cita.estado == "CANCELADA" %}
+
+                            <span class="estado cancelada">
+                                Cancelada
+                            </span>
+
+                        {% elif cita.estado == "REALIZADA" %}
+
+                            <span class="estado realizada">
+                                Realizada
+                            </span>
+
+                        {% elif cita.estado == "CONFIRMADA" %}
+
+                            <span class="estado confirmado">
+                                Confirmada
+                            </span>
+
+                        {% else %}
+
+                            <span class="estado programada">
+                                Programada
+                            </span>
+
+                        {% endif %}
+
+                    </td>
+
+
+                    <td>
+
+                        <a
+                            class="link-tabla"
+                            href="{{ url_for('editar_cita', id=cita.id_cita) }}">
+                            Editar
+                        </a>
+
+                    </td>
+
+                </tr>
+
+                {% endfor %}
+
+
+            {% else %}
+
+                <tr>
+
+                    <td
+                        colspan="7"
+                        class="texto-centrado">
+
+                        Este paciente no tiene citas registradas.
+
+                    </td>
+
+                </tr>
+
+            {% endif %}
+
+        </tbody>
+
+    </table>
+
+</section>
+
+
+<section class="panel">
+
+    <div class="encabezado-seccion">
+
+        <h2>Documentos digitales</h2>
+
+        <a
+            class="btn-secundario"
+            href="{{ url_for('documentos') }}">
+            Subir documento
+        </a>
+
+    </div>
+
+
+    <table>
+
+        <thead>
+
+            <tr>
+                <th>Tipo</th>
+                <th>Documento</th>
+                <th>Fecha de subida</th>
+                <th>Archivo</th>
+            </tr>
+
+        </thead>
+
+        <tbody>
+
+            {% if documentos %}
+
+                {% for documento in documentos %}
+
+                <tr>
+
+                    <td>
+                        {{ documento.nombre_tipo }}
+                    </td>
+
+
+                    <td>
+                        {{ documento.nombre_documento }}
+                    </td>
+
+
+                    <td>
+                        {{ documento.fecha_subida }}
+                    </td>
+
+
+                    <td>
+
+                        {% if documento.ruta_archivo %}
+
+                            <a
+                                class="link-tabla"
+                                href="{{ url_for('static', filename=documento.ruta_archivo) }}"
+                                target="_blank">
+                                Ver archivo
+                            </a>
+
+                        {% else %}
+
+                            Sin archivo
+
+                        {% endif %}
+
+                    </td>
+
+                </tr>
+
+                {% endfor %}
+
+
+            {% else %}
+
+                <tr>
+
+                    <td
+                        colspan="4"
+                        class="texto-centrado">
+
+                        Este paciente no tiene documentos registrados.
+
+                    </td>
+
+                </tr>
+
+            {% endif %}
+
+        </tbody>
+
+    </table>
+
+</section>
+
+{% endblock %}

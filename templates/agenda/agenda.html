@@ -1,0 +1,772 @@
+{% extends "base.html" %}
+
+{% block titulo %}
+Agenda - DentalClinic
+{% endblock %}
+
+{% block encabezado %}
+Agenda de Citas
+{% endblock %}
+
+{% block contenido %}
+
+
+{% if error %}
+<section class="panel">
+    <p class="mensaje-sistema mensaje-error">
+        {{ error }}
+    </p>
+</section>
+{% endif %}
+
+
+{% if mensaje %}
+<section class="panel">
+    <p class="mensaje-sistema mensaje-exito">
+        {{ mensaje }}
+    </p>
+</section>
+{% endif %}
+
+
+<section class="panel agenda-navegacion">
+
+    <div class="agenda-fecha-encabezado">
+
+        <a
+            class="btn-agenda-nav"
+            href="{{ url_for('agenda', fecha=fecha_anterior) }}">
+
+            <i class="bi bi-chevron-left"></i>
+            Día anterior
+
+        </a>
+
+
+        <div class="agenda-fecha-actual">
+
+            <span>Agenda diaria</span>
+
+            <h2>{{ fecha_formateada }}</h2>
+
+        </div>
+
+
+        <a
+            class="btn-agenda-nav"
+            href="{{ url_for('agenda', fecha=fecha_siguiente) }}">
+
+            Día siguiente
+            <i class="bi bi-chevron-right"></i>
+
+        </a>
+
+    </div>
+
+
+    <div class="agenda-selector-fecha">
+
+        <a
+            class="btn-secundario"
+            href="{{ url_for('agenda', fecha=fecha_hoy) }}">
+
+            Hoy
+
+        </a>
+
+
+        <form
+            method="GET"
+            action="{{ url_for('agenda') }}">
+
+            <label for="fechaAgendaConsulta">
+                Ir a una fecha
+            </label>
+
+            <div class="agenda-selector-control">
+
+                <input
+                    type="date"
+                    id="fechaAgendaConsulta"
+                    name="fecha"
+                    value="{{ fecha_seleccionada }}"
+                    required>
+
+                <button type="submit">
+                    Ver fecha
+                </button>
+
+            </div>
+
+        </form>
+
+    </div>
+
+</section>
+
+
+<section class="cards">
+
+    <article class="card">
+
+        <h3>Citas del día</h3>
+
+        <p>{{ citas|length }}</p>
+
+    </article>
+
+
+    <article class="card">
+
+        <h3>Programadas</h3>
+
+        <p>
+            {{
+                citas
+                | selectattr("estado", "equalto", "PROGRAMADA")
+                | list
+                | length
+            }}
+        </p>
+
+    </article>
+
+
+    <article class="card">
+
+        <h3>Confirmadas</h3>
+
+        <p>
+            {{
+                citas
+                | selectattr("estado", "equalto", "CONFIRMADA")
+                | list
+                | length
+            }}
+        </p>
+
+    </article>
+
+
+    <article class="card">
+
+        <h3>Realizadas</h3>
+
+        <p>
+            {{
+                citas
+                | selectattr("estado", "equalto", "REALIZADA")
+                | list
+                | length
+            }}
+        </p>
+
+    </article>
+
+</section>
+
+
+<section class="panel">
+
+    <div class="encabezado-seccion">
+
+        <div>
+
+            <h2>Agenda por profesional</h2>
+
+            <p>
+                Las columnas corresponden a los odontólogos activos
+                y las filas a los horarios de atención.
+            </p>
+
+        </div>
+
+    </div>
+
+
+    {% if odontologos %}
+
+    <div class="agenda-tabla-contenedor">
+
+        <table class="agenda-profesionales">
+
+            <thead>
+
+                <tr>
+
+                    <th class="agenda-columna-hora">
+                        Hora
+                    </th>
+
+                    {% for odontologo in odontologos %}
+
+                    <th class="agenda-columna-profesional">
+
+                        <i class="bi bi-person-badge"></i>
+
+                        {{ odontologo.nombre }}
+
+                    </th>
+
+                    {% endfor %}
+
+                </tr>
+
+            </thead>
+
+
+            <tbody>
+
+                {% for hora in horarios %}
+
+                <tr>
+
+                    <th class="agenda-hora">
+                        {{ hora }}
+                    </th>
+
+
+                    {% for odontologo in odontologos %}
+
+                        {% set celda = agenda_matriz[odontologo.id_usuario][hora] %}
+
+                        <td class="agenda-celda">
+
+                            {% if celda %}
+
+                                {% if celda.es_inicio %}
+
+                                    {% set cita = celda.cita %}
+
+                                    <article
+                                        class="agenda-cita
+                                        {% if cita.estado == 'CONFIRMADA' %}
+                                            agenda-cita-confirmada
+                                        {% elif cita.estado == 'REALIZADA' %}
+                                            agenda-cita-realizada
+                                        {% elif cita.estado == 'CANCELADA' %}
+                                            agenda-cita-cancelada
+                                        {% else %}
+                                            agenda-cita-programada
+                                        {% endif %}">
+
+
+                                        <div class="agenda-cita-superior">
+
+                                            <strong>
+                                                {{ cita.nombre }}
+                                                {{ cita.apellido }}
+                                            </strong>
+
+                                            <span>
+                                                {{ cita.duracion_minutos }} min
+                                            </span>
+
+                                        </div>
+
+
+                                        <p class="agenda-cita-motivo">
+                                            {{ cita.motivo }}
+                                        </p>
+
+
+                                        <div class="agenda-cita-estado">
+
+                                            {% if cita.estado == "CONFIRMADA" %}
+
+                                                <span class="estado confirmado">
+                                                    Confirmada
+                                                </span>
+
+                                            {% elif cita.estado == "REALIZADA" %}
+
+                                                <span class="estado realizada">
+                                                    Realizada
+                                                </span>
+
+                                            {% elif cita.estado == "CANCELADA" %}
+
+                                                <span class="estado cancelada">
+                                                    Cancelada
+                                                </span>
+
+                                            {% else %}
+
+                                                <span class="estado programada">
+                                                    Programada
+                                                </span>
+
+                                            {% endif %}
+
+                                        </div>
+
+
+                                        <div class="agenda-cita-acciones">
+
+                                            <a
+                                                href="{{ url_for('ficha_paciente', id=cita.id_paciente) }}">
+
+                                                Ver ficha
+
+                                            </a>
+
+
+                                            <a
+                                                href="{{ url_for('editar_cita', id=cita.id_cita) }}#formulario-cita">
+
+                                                Editar
+
+                                            </a>
+
+                                        </div>
+
+
+                                        {% if cita.estado != "CANCELADA" %}
+
+                                        <form
+                                            action="{{ url_for('cancelar_cita_route', id=cita.id_cita) }}"
+                                            method="POST"
+                                            onsubmit="return confirm('¿Deseas cancelar esta cita? El registro permanecerá en el historial.');">
+
+                                            <input
+                                                type="hidden"
+                                                name="fecha_retorno"
+                                                value="{{ fecha_seleccionada }}">
+
+                                            <button
+                                                type="submit"
+                                                class="agenda-btn-cancelar">
+
+                                                Cancelar
+
+                                            </button>
+
+                                        </form>
+
+                                        {% endif %}
+
+                                    </article>
+
+
+                                {% else %}
+
+                                    <div class="agenda-ocupada-continuacion">
+
+                                        <i class="bi bi-clock-history"></i>
+
+                                        Ocupado hasta
+                                        {{ celda.hora_termino }}
+
+                                    </div>
+
+                                {% endif %}
+
+
+                            {% else %}
+
+                                <div class="agenda-disponible">
+                                    Disponible
+                                </div>
+
+                            {% endif %}
+
+                        </td>
+
+                    {% endfor %}
+
+                </tr>
+
+                {% endfor %}
+
+            </tbody>
+
+        </table>
+
+    </div>
+
+
+    {% else %}
+
+    <p class="texto-centrado">
+        No existen odontólogos activos registrados.
+    </p>
+
+    {% endif %}
+
+</section>
+
+
+<section
+    class="panel"
+    id="formulario-cita">
+
+    <h2>
+
+        {% if cita_editar %}
+
+            Editar cita
+
+        {% else %}
+
+            Nueva cita
+
+        {% endif %}
+
+    </h2>
+
+
+    {% if cita_editar %}
+
+    <p style="margin-bottom: 18px; color: var(--muted);">
+
+        Modifique los datos necesarios y presione
+        <strong>Actualizar cita</strong>.
+
+    </p>
+
+    {% endif %}
+
+
+    <form
+        class="formulario"
+        action="{% if cita_editar %}{{ url_for('actualizar_cita_route', id=cita_editar.id_cita) }}{% else %}{{ url_for('crear_cita_route') }}{% endif %}"
+        method="POST">
+
+
+        <div>
+
+            <label for="agenda_id_paciente">
+                Paciente
+            </label>
+
+            <select
+                name="id_paciente"
+                id="agenda_id_paciente"
+                required>
+
+                <option value="">
+                    Seleccione un paciente
+                </option>
+
+                {% for paciente in pacientes %}
+
+                <option
+                    value="{{ paciente.id_paciente }}"
+                    {% if cita_editar and cita_editar.id_paciente|string == paciente.id_paciente|string %}
+                        selected
+                    {% endif %}>
+
+                    {{ paciente.nombre }}
+                    {{ paciente.apellido }}
+                    - {{ paciente.rut }}
+
+                </option>
+
+                {% endfor %}
+
+            </select>
+
+        </div>
+
+
+        <div>
+
+            <label for="agenda_id_usuario">
+                Profesional
+            </label>
+
+            <select
+                name="id_usuario"
+                id="agenda_id_usuario"
+                required>
+
+                <option value="">
+                    Seleccione un profesional
+                </option>
+
+                {% for odontologo in odontologos %}
+
+                <option
+                    value="{{ odontologo.id_usuario }}"
+                    {% if cita_editar and cita_editar.id_usuario|string == odontologo.id_usuario|string %}
+                        selected
+                    {% endif %}>
+
+                    {{ odontologo.nombre }}
+
+                </option>
+
+                {% endfor %}
+
+            </select>
+
+        </div>
+
+
+        <div>
+
+            <label for="agenda_fecha">
+                Fecha
+            </label>
+
+            <input
+                type="date"
+                name="fecha"
+                id="agenda_fecha"
+                value="{% if cita_editar %}{{ cita_editar.fecha }}{% else %}{{ fecha_seleccionada }}{% endif %}"
+                required>
+
+        </div>
+
+
+        <div>
+
+            <label for="agenda_hora">
+                Hora
+            </label>
+
+            <select
+                name="hora"
+                id="agenda_hora"
+                required>
+
+                <option value="">
+                    Seleccione una hora
+                </option>
+
+                {% for hora_disponible in horarios %}
+
+                <option
+                    value="{{ hora_disponible }}"
+                    {% if cita_editar and cita_editar.hora == hora_disponible %}
+                        selected
+                    {% endif %}>
+
+                    {{ hora_disponible }}
+
+                </option>
+
+                {% endfor %}
+
+            </select>
+
+        </div>
+
+
+        <div>
+
+            <label for="agenda_duracion">
+                Duración
+            </label>
+
+            <select
+                name="duracion_minutos"
+                id="agenda_duracion"
+                required>
+
+                {% set duraciones = [
+                    (15, "15 minutos"),
+                    (30, "30 minutos"),
+                    (45, "45 minutos"),
+                    (60, "1 hora"),
+                    (90, "1 hora 30 minutos")
+                ] %}
+
+                {% for valor, texto in duraciones %}
+
+                <option
+                    value="{{ valor }}"
+                    {% if cita_editar and cita_editar.duracion_minutos|int == valor %}
+                        selected
+                    {% elif not cita_editar and valor == 30 %}
+                        selected
+                    {% endif %}>
+
+                    {{ texto }}
+
+                </option>
+
+                {% endfor %}
+
+            </select>
+
+        </div>
+
+
+        <div>
+
+            <label for="agenda_motivo">
+                Motivo
+            </label>
+
+            <select
+                name="motivo"
+                id="agenda_motivo"
+                required>
+
+                <option value="">
+                    Seleccione un motivo
+                </option>
+
+                {% set motivos = [
+                    "Evaluación",
+                    "Control",
+                    "Limpieza dental",
+                    "Tratamiento",
+                    "Urgencia"
+                ] %}
+
+                {% for motivo in motivos %}
+
+                <option
+                    value="{{ motivo }}"
+                    {% if cita_editar and cita_editar.motivo == motivo %}
+                        selected
+                    {% endif %}>
+
+                    {{ motivo }}
+
+                </option>
+
+                {% endfor %}
+
+            </select>
+
+        </div>
+
+
+        <div>
+
+            <label for="agenda_estado">
+                Estado
+            </label>
+
+            <select
+                name="estado"
+                id="agenda_estado"
+                required>
+
+                <option
+                    value="PROGRAMADA"
+                    {% if not cita_editar or cita_editar.estado == "PROGRAMADA" %}
+                        selected
+                    {% endif %}>
+
+                    Programada
+
+                </option>
+
+                <option
+                    value="CONFIRMADA"
+                    {% if cita_editar and cita_editar.estado == "CONFIRMADA" %}
+                        selected
+                    {% endif %}>
+
+                    Confirmada
+
+                </option>
+
+                <option
+                    value="CANCELADA"
+                    {% if cita_editar and cita_editar.estado == "CANCELADA" %}
+                        selected
+                    {% endif %}>
+
+                    Cancelada
+
+                </option>
+
+                <option
+                    value="REALIZADA"
+                    {% if cita_editar and cita_editar.estado == "REALIZADA" %}
+                        selected
+                    {% endif %}>
+
+                    Realizada
+
+                </option>
+
+            </select>
+
+        </div>
+
+
+        <button type="submit">
+
+            {% if cita_editar %}
+
+                Actualizar cita
+
+            {% else %}
+
+                Guardar cita
+
+            {% endif %}
+
+        </button>
+
+
+        {% if cita_editar %}
+
+        <a
+            class="link-tabla"
+            href="{{ url_for('agenda', fecha=fecha_seleccionada) }}">
+
+            Cancelar edición
+
+        </a>
+
+        {% endif %}
+
+    </form>
+
+</section>
+
+
+<script
+    id="citas-agenda-data"
+    type="application/json">
+[
+    {% for cita in citas %}
+    {
+        "id_cita": "{{ cita.id_cita }}",
+        "id_usuario": "{{ cita.id_usuario }}",
+        "fecha": "{{ cita.fecha }}",
+        "hora": "{{ cita.hora }}",
+        "duracion_minutos": {{ cita.duracion_minutos }},
+        "estado": "{{ cita.estado }}"
+    }{% if not loop.last %},{% endif %}
+    {% endfor %}
+]
+</script>
+
+
+<input
+    type="hidden"
+    id="agenda_cita_editando"
+    value="{{ cita_editar.id_cita if cita_editar else '' }}">
+
+
+{% if cita_editar %}
+
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+
+    const formularioCita =
+        document.getElementById("formulario-cita");
+
+    if (!formularioCita) {
+        return;
+    }
+
+    formularioCita.scrollIntoView({
+        behavior: "smooth",
+        block: "start"
+    });
+
+});
+</script>
+
+{% endif %}
+
+{% endblock %}

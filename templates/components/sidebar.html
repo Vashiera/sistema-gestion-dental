@@ -1,0 +1,63 @@
+<aside class="sidebar">
+
+    <div class="logo">
+        <h2>DentalClinic</h2>
+        <p>Sistema de Gestión Dental</p>
+    </div>
+
+
+    <nav class="menu">
+
+        <a href="{{ url_for('dashboard') }}">
+            <i class="bi bi-house"></i>
+            Inicio
+        </a>
+
+        <a href="{{ url_for('agenda') }}">
+            <i class="bi bi-calendar3"></i>
+            Agenda
+        </a>
+
+        <a href="{{ url_for('pacientes') }}">
+            <i class="bi bi-people"></i>
+            Pacientes
+        </a>
+
+        <a href="{{ url_for('tratamientos') }}">
+            <i class="bi bi-clipboard2-pulse"></i>
+            Tratamientos
+        </a>
+
+        <a href="{{ url_for('evoluciones') }}">
+            <i class="bi bi-journal-medical"></i>
+            Evoluciones
+        </a>
+
+        <a href="{{ url_for('presupuestos') }}">
+            <i class="bi bi-cash-coin"></i>
+            Presupuestos y pagos
+        </a>
+
+        <a href="{{ url_for('documentos') }}">
+            <i class="bi bi-file-earmark-text"></i>
+            Documentos
+        </a>
+
+        <a href="{{ url_for('administracion') }}">
+            <i class="bi bi-gear"></i>
+            Administración
+        </a>
+
+    </nav>
+
+
+    <div class="sidebar-footer">
+
+        <a href="{{ url_for('cerrar_sesion') }}">
+            <i class="bi bi-box-arrow-left"></i>
+            Cerrar sesión
+        </a>
+
+    </div>
+
+</aside>

@@ -1,0 +1,314 @@
+{% extends "base.html" %}
+
+{% block titulo %}
+Dashboard - DentalClinic
+{% endblock %}
+
+{% block encabezado %}
+Panel de Inicio
+{% endblock %}
+
+{% block contenido %}
+
+<section class="cards">
+
+    <article class="card">
+        <h3>Pacientes activos</h3>
+        <p>{{ resumen.pacientes_activos }}</p>
+    </article>
+
+    <article class="card">
+        <h3>Citas de hoy</h3>
+        <p>{{ resumen.citas_hoy }}</p>
+    </article>
+
+    <article class="card">
+        <h3>Tratamientos pendientes</h3>
+        <p>{{ resumen.tratamientos_pendientes }}</p>
+    </article>
+
+    <article class="card">
+        <h3>Documentos registrados</h3>
+        <p>{{ resumen.documentos_registrados }}</p>
+    </article>
+
+</section>
+
+
+<section class="cards">
+
+    <article class="card">
+        <h3>Total tratamientos</h3>
+
+        <p>
+            ${{ "{:,.0f}".format(resumen.total_tratamientos).replace(",", ".") }}
+        </p>
+    </article>
+
+    <article class="card">
+        <h3>Total pagado</h3>
+
+        <p>
+            ${{ "{:,.0f}".format(resumen.total_pagado).replace(",", ".") }}
+        </p>
+    </article>
+
+    <article class="card">
+        <h3>Saldo pendiente</h3>
+
+        <p>
+            ${{ "{:,.0f}".format(resumen.saldo_pendiente).replace(",", ".") }}
+        </p>
+    </article>
+
+    <article class="card">
+        <h3>Evoluciones registradas</h3>
+        <p>{{ evoluciones_recientes|length }}</p>
+    </article>
+
+</section>
+
+
+<section class="grid-doble">
+
+    <article class="panel">
+
+        <h2>Agenda de hoy</h2>
+
+        <table>
+
+            <thead>
+
+                <tr>
+                    <th>Hora</th>
+                    <th>Paciente</th>
+                    <th>Motivo</th>
+                    <th>Profesional</th>
+                </tr>
+
+            </thead>
+
+            <tbody>
+
+            {% if citas_hoy %}
+
+                {% for cita in citas_hoy %}
+
+                <tr>
+
+                    <td>{{ cita.hora }}</td>
+
+                    <td>
+                        {{ cita.nombre }}
+                        {{ cita.apellido }}
+                    </td>
+
+                    <td>{{ cita.motivo }}</td>
+
+                    <td>{{ cita.nombre_profesional }}</td>
+
+                </tr>
+
+                {% endfor %}
+
+            {% else %}
+
+                <tr>
+
+                    <td
+                        colspan="4"
+                        class="texto-centrado">
+
+                        No existen citas para hoy.
+
+                    </td>
+
+                </tr>
+
+            {% endif %}
+
+            </tbody>
+
+        </table>
+
+    </article>
+
+
+    <article class="panel">
+
+        <h2>Alertas</h2>
+
+        {% if alertas %}
+
+            <ul class="lista-alertas">
+
+            {% for alerta in alertas %}
+
+                <li>{{ alerta.mensaje }}</li>
+
+            {% endfor %}
+
+            </ul>
+
+        {% else %}
+
+            <p>
+
+                No existen alertas pendientes.
+
+            </p>
+
+        {% endif %}
+
+    </article>
+
+</section>
+
+
+<section class="grid-doble">
+
+    <article class="panel">
+
+        <h2>Últimas evoluciones</h2>
+
+        <table>
+
+            <thead>
+
+                <tr>
+
+                    <th>Fecha</th>
+                    <th>Paciente</th>
+                    <th>Pieza</th>
+                    <th>Tratamiento</th>
+
+                </tr>
+
+            </thead>
+
+            <tbody>
+
+            {% if evoluciones_recientes %}
+
+                {% for evolucion in evoluciones_recientes %}
+
+                <tr>
+
+                    <td>{{ evolucion.fecha }}</td>
+
+                    <td>
+
+                        {{ evolucion.nombre }}
+                        {{ evolucion.apellido }}
+
+                    </td>
+
+                    <td>
+
+                        {{ evolucion.pieza_dental or "-" }}
+
+                    </td>
+
+                    <td>
+
+                        {{ evolucion.nombre_tratamiento }}
+
+                    </td>
+
+                </tr>
+
+                {% endfor %}
+
+            {% else %}
+
+                <tr>
+
+                    <td
+                        colspan="4"
+                        class="texto-centrado">
+
+                        No existen evoluciones registradas.
+
+                    </td>
+
+                </tr>
+
+            {% endif %}
+
+            </tbody>
+
+        </table>
+
+    </article>
+
+
+    <article class="panel">
+
+        <h2>Últimos pagos</h2>
+
+        <table>
+
+            <thead>
+
+                <tr>
+
+                    <th>Fecha</th>
+                    <th>Paciente</th>
+                    <th>Monto</th>
+
+                </tr>
+
+            </thead>
+
+            <tbody>
+
+            {% if pagos_recientes %}
+
+                {% for pago in pagos_recientes %}
+
+                <tr>
+
+                    <td>{{ pago.fecha_pago }}</td>
+
+                    <td>
+
+                        {{ pago.nombre }}
+                        {{ pago.apellido }}
+
+                    </td>
+
+                    <td>
+
+                        ${{ "{:,.0f}".format(pago.monto).replace(",", ".") }}
+
+                    </td>
+
+                </tr>
+
+                {% endfor %}
+
+            {% else %}
+
+                <tr>
+
+                    <td
+                        colspan="3"
+                        class="texto-centrado">
+
+                        No existen pagos registrados.
+
+                    </td>
+
+                </tr>
+
+            {% endif %}
+
+            </tbody>
+
+        </table>
+
+    </article>
+
+</section>
+
+{% endblock %}

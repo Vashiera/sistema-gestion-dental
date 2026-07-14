@@ -1,0 +1,417 @@
+{% extends "base.html" %}
+
+{% block titulo %}
+Estado de Cuenta
+{% endblock %}
+
+{% block encabezado %}
+Estado de Cuenta del Paciente
+{% endblock %}
+
+{% block contenido %}
+
+{% if error %}
+<section class="panel">
+    <p class="mensaje-sistema mensaje-error">
+        {{ error }}
+    </p>
+</section>
+{% endif %}
+
+{% if mensaje %}
+<section class="panel">
+    <p class="mensaje-sistema mensaje-exito">
+        {{ mensaje }}
+    </p>
+</section>
+{% endif %}
+
+
+<div class="encabezado-seccion">
+
+    <div>
+
+        <h2>
+            {{ cuenta.nombre }}
+            {{ cuenta.apellido }}
+        </h2>
+
+        <p>{{ cuenta.rut }}</p>
+
+    </div>
+
+    <a
+        href="{{ url_for('presupuestos') }}"
+        class="link-tabla">
+
+        Volver
+
+    </a>
+
+</div>
+
+
+<section class="cards">
+
+    <article class="card">
+
+        <h3>Total tratamientos</h3>
+
+        <p>
+
+            ${{ "{:,.0f}".format(cuenta.total_tratamientos).replace(",", ".") }}
+
+        </p>
+
+    </article>
+
+
+    <article class="card">
+
+        <h3>Total pagado</h3>
+
+        <p>
+
+            ${{ "{:,.0f}".format(cuenta.total_pagado).replace(",", ".") }}
+
+        </p>
+
+    </article>
+
+
+    <article class="card">
+
+        <h3>Saldo pendiente</h3>
+
+        <p>
+
+            ${{ "{:,.0f}".format(cuenta.saldo).replace(",", ".") }}
+
+        </p>
+
+    </article>
+
+
+    <article class="card">
+
+        <h3>Estado</h3>
+
+        <p>
+
+            {% if cuenta.estado_pago == "PAGADO" %}
+
+                <span class="estado realizada">
+                    Pagado
+                </span>
+
+            {% elif cuenta.estado_pago == "PAGO PARCIAL" %}
+
+                <span class="estado confirmado">
+                    Pago parcial
+                </span>
+
+            {% elif cuenta.estado_pago == "PENDIENTE" %}
+
+                <span class="estado pendiente">
+                    Pendiente
+                </span>
+
+            {% else %}
+
+                <span class="estado programada">
+                    Sin tratamientos
+                </span>
+
+            {% endif %}
+
+        </p>
+
+    </article>
+
+</section>
+
+
+
+<section class="panel">
+
+    <h2>Tratamientos registrados</h2>
+
+    <table>
+
+        <thead>
+
+            <tr>
+
+                <th>Pieza</th>
+                <th>Tratamiento</th>
+                <th>Descripción</th>
+                <th>Estado</th>
+                <th>Valor</th>
+
+            </tr>
+
+        </thead>
+
+        <tbody>
+
+        {% if tratamientos %}
+
+            {% for tratamiento in tratamientos %}
+
+            <tr>
+
+                <td>
+
+                    {{ tratamiento.pieza_dental or "General" }}
+
+                </td>
+
+                <td>
+
+                    {{ tratamiento.nombre_tratamiento }}
+
+                </td>
+
+                <td>
+
+                    {{ tratamiento.descripcion or "Sin observaciones" }}
+
+                </td>
+
+                <td>
+
+                    <span class="estado">
+
+                        {{ tratamiento.estado }}
+
+                    </span>
+
+                </td>
+
+                <td>
+
+                    ${{ "{:,.0f}".format(tratamiento.valor_presupuestado).replace(",", ".") }}
+
+                </td>
+
+            </tr>
+
+            {% endfor %}
+
+        {% else %}
+
+            <tr>
+
+                <td
+                    colspan="5"
+                    class="texto-centrado">
+
+                    El paciente no posee tratamientos registrados.
+
+                </td>
+
+            </tr>
+
+        {% endif %}
+
+        </tbody>
+
+    </table>
+
+</section>
+
+
+
+<section class="panel">
+
+    <h2>Registrar pago</h2>
+
+    <form
+        class="formulario"
+        action="{{ url_for('registrar_pago_route', id_paciente=cuenta.id_paciente) }}"
+        method="POST">
+
+        <div>
+
+            <label>Monto</label>
+
+            <input
+                type="number"
+                name="monto"
+                min="1"
+                step="1"
+                required>
+
+        </div>
+
+
+        <div>
+
+            <label>Método de pago</label>
+
+            <select
+                name="metodo_pago"
+                required>
+
+                <option value="EFECTIVO">
+                    Efectivo
+                </option>
+
+                <option value="DEBITO">
+                    Débito
+                </option>
+
+                <option value="CREDITO">
+                    Crédito
+                </option>
+
+                <option value="TRANSFERENCIA">
+                    Transferencia
+                </option>
+
+            </select>
+
+        </div>
+
+
+        <div class="campo-completo">
+
+            <label>Observaciones</label>
+
+            <textarea
+                name="observaciones"
+                rows="3"></textarea>
+
+        </div>
+
+
+        <button type="submit">
+
+            Registrar pago
+
+        </button>
+
+    </form>
+
+</section>
+
+
+
+<section class="panel">
+
+    <h2>Historial de pagos</h2>
+
+    <table>
+
+        <thead>
+
+            <tr>
+
+                <th>Fecha</th>
+                <th>Monto</th>
+                <th>Método</th>
+                <th>Estado</th>
+                <th>Observaciones</th>
+                <th>Anular</th>
+
+            </tr>
+
+        </thead>
+
+        <tbody>
+
+        {% if pagos %}
+
+            {% for pago in pagos %}
+
+            <tr>
+
+                <td>
+
+                    {{ pago.fecha_pago }}
+
+                </td>
+
+                <td>
+
+                    ${{ "{:,.0f}".format(pago.monto).replace(",", ".") }}
+
+                </td>
+
+                <td>
+
+                    {{ pago.metodo_pago }}
+
+                </td>
+
+                <td>
+
+                    {{ pago.estado }}
+
+                </td>
+
+                <td>
+
+                    {{ pago.observaciones or "-" }}
+
+                </td>
+
+                <td>
+
+                    {% if pago.estado == "REGISTRADO" %}
+
+                    <form
+                        action="{{ url_for('anular_pago_route', id_pago=pago.id_pago) }}"
+                        method="POST">
+
+                        <input
+                            type="hidden"
+                            name="id_paciente"
+                            value="{{ cuenta.id_paciente }}">
+
+                        <button
+                            type="submit"
+                            class="btn-tabla"
+                            onclick="return confirm('¿Desea anular este pago?');">
+
+                            Anular
+
+                        </button>
+
+                    </form>
+
+                    {% else %}
+
+                        -
+
+                    {% endif %}
+
+                </td>
+
+            </tr>
+
+            {% endfor %}
+
+        {% else %}
+
+            <tr>
+
+                <td
+                    colspan="6"
+                    class="texto-centrado">
+
+                    No existen pagos registrados.
+
+                </td>
+
+            </tr>
+
+        {% endif %}
+
+        </tbody>
+
+    </table>
+
+</section>
+
+{% endblock %}

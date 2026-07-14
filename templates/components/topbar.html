@@ -1,0 +1,14 @@
+<header class="topbar">
+    <div class="topbar-left">
+        <h1>{% block encabezado %}Panel Principal{% endblock %}</h1>
+    </div>
+
+    <div class="topbar-right">
+        <span class="notificacion"><i class="bi bi-bell"></i></span>
+
+        <div class="usuario">
+            <span>{{ session.get("usuario", "Usuario") }}</span>
+            <small>{{ session.get("rol", "Rol activo") }}</small>
+        </div>
+    </div>
+</header>
