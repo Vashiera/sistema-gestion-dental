@@ -1,44 +1,121 @@
 # Sistema de Gestión Dental
 
-## Proyecto de Titulación - Ingeniería en Informática IPLACEX
+**Proyecto de Titulación – Ingeniería en Informática | IPLACEX**
 
-### Descripción
+---
 
-Sistema web orientado a clínicas odontológicas pequeñas, diseñado para administrar pacientes, citas, tratamientos, evoluciones clínicas y documentos digitales de manera centralizada.
+## Descripción
 
-El objetivo del proyecto es mejorar la organización de la información clínica y administrativa, reduciendo el uso de documentación física y facilitando el acceso a los registros de los pacientes.
+Sistema web orientado a clínicas odontológicas pequeñas, diseñado para administrar pacientes, citas, tratamientos, presupuestos, pagos, evoluciones clínicas y documentos digitales de manera centralizada.
 
-### Tecnologías utilizadas
+El objetivo del proyecto es mejorar la organización de la información clínica y administrativa, reduciendo el uso de documentación física mediante la digitalización de documentos y facilitando el acceso seguro a la información de los pacientes.
 
-- Python
+---
+
+## Funcionalidades principales
+
+- Inicio de sesión con autenticación de usuarios.
+- Gestión de pacientes.
+- Agenda de citas.
+- Gestión de tratamientos odontológicos.
+- Registro de evoluciones clínicas.
+- Creación y administración de presupuestos.
+- Registro de pagos.
+- Gestión de documentos digitales asociados al paciente.
+- Administración de usuarios y roles.
+
+---
+
+## Tecnologías utilizadas
+
+### Backend
+
+- Python 3
 - Flask
-- HTML
-- CSS
-- JavaScript
-- Oracle Database XE
-- Oracle SQL Developer
 
-### Modelo de Base de Datos
+### Frontend
+
+- HTML5
+- CSS3
+- JavaScript
+
+### Base de datos
+
+- MySQL 8
+- MySQL Workbench
+
+### Despliegue
+
+- Render
+- Aiven MySQL
+
+---
+
+## Modelo de Base de Datos
 
 La base de datos fue diseñada utilizando un modelo relacional normalizado hasta Tercera Forma Normal (3FN).
 
-Entidades principales:
+### Tablas principales
 
 - Roles
 - Usuarios
 - Pacientes
 - Citas
+- Catálogo de Tratamientos
 - Tratamientos
 - Evoluciones
+- Presupuestos
+- Detalle Presupuesto
+- Pagos
+- Tipos de Documento
 - Documentos
-- Tipos_Documento
 
-### Contenido del repositorio
+---
 
-- Script SQL de creación de la base de datos.
-- Diagrama Entidad-Relación (DER).
+## Estructura del proyecto
 
+```
+DentalClinic/
+│
+├── app.py
+├── config.py
+├── models/
+├── routes/
+├── templates/
+├── static/
+└── database/
+    ├── conexion.py
+    └── dentalclinic.sql
+```
 
-### Estado del proyecto
+---
 
-Actividad Formativa 1 – Diseño e implementación inicial de la base de datos.
+## Contenido del repositorio
+
+- Código fuente del sistema.
+- Script SQL completo (`database/dentalclinic.sql`).
+- Modelos, rutas y vistas de la aplicación.
+- Recursos estáticos (CSS y JavaScript).
+
+---
+
+## Estado del proyecto
+
+Proyecto de titulación en desarrollo.
+
+Actualmente cuenta con:
+
+- Base de datos relacional completamente implementada.
+- Sistema desplegado en Render.
+- Base de datos MySQL alojada en Aiven.
+- Módulos principales implementados y operativos.
+- Autenticación de usuarios.
+- Gestión de pacientes, citas, tratamientos, presupuestos, pagos, documentos y evoluciones.
+
+---
+
+## Autor
+
+**Fernanda Julio**
+
+Proyecto desarrollado como parte del proceso de titulación de Ingeniería en Informática en IPLACEX.
